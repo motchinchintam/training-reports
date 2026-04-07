@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Attendance Tracker</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#999;
+  --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-tx:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-tx:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-tx:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-tx:#791F1F;
+  --r:8px;--rl:12px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
+  --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --blue-bg:#0C447C;--blue-tx:#B5D4F4;
+  --green-bg:#27500A;--green-tx:#C0DD97;
+  --amber-bg:#633806;--amber-tx:#FAC775;
+  --red-bg:#791F1F;--red-tx:#F7C1C1;
+}}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg2);color:var(--tx);min-height:100vh;padding:2rem 1rem}
+.page{max-width:960px;margin:0 auto}
+h1{font-size:20px;font-weight:500;margin-bottom:1.5rem}
+.card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:12px 18px;border-bottom:0.5px solid var(--bd);background:var(--bg2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card-body{padding:16px 18px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-blue{background:var(--blue-bg);color:var(--blue-tx)}
+.badge-green{background:var(--green-bg);color:var(--green-tx)}
+
+.settings-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1rem}
+.field label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select{width:100%;border:0.5px solid var(--bd2);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none}
+.field input:focus{border-color:var(--blue);background:var(--bg)}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:1rem}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx2)}
+.dot{width:18px;height:18px;border-radius:4px;display:inline-block;cursor:default}
+.dot-P{background:var(--green-bg);border:1px solid var(--green)}
+.dot-A{background:var(--red-bg);border:1px solid var(--red)}
+.dot-L{background:var(--amber-bg);border:1px solid var(--amber)}
+.dot-blank{background:var(--bg3);border:1px solid var(--bd2)}
+
+.scroll-wrap{overflow-x:auto}
+table{border-collapse:collapse;font-size:12px;min-width:600px}
+thead th{padding:6px 10px;font-size:11px;font-weight:500;color:var(--tx2);border-bottom:0.5px solid var(--bd);border-right:0.5px solid var(--bd);background:var(--bg2);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;text-align:center}
+thead th:first-child{text-align:left;min-width:130px;position:sticky;left:0;z-index:2;background:var(--bg2)}
+tbody td{padding:5px 8px;border-bottom:0.5px solid var(--bd);border-right:0.5px solid var(--bd);text-align:center;vertical-align:middle}
+tbody td:first-child{text-align:left;font-size:13px;color:var(--tx);position:sticky;left:0;background:var(--bg);z-index:1;min-width:130px}
+tbody tr:hover td{filter:brightness(0.97)}
+.att-cell{width:28px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;margin:0 auto;user-select:none;transition:all .1s}
+.att-P{background:var(--green-bg);color:var(--green-tx)}
+.att-A{background:var(--red-bg);color:var(--red-tx)}
+.att-L{background:var(--amber-bg);color:var(--amber-tx)}
+.att-blank{background:var(--bg3);color:var(--tx3)}
+.rate-cell{font-size:11px;font-weight:500;padding:4px 8px;border-radius:4px}
+.rate-good{color:var(--green-tx);background:var(--green-bg)}
+.rate-mid{color:var(--amber-tx);background:var(--amber-bg)}
+.rate-bad{color:var(--red-tx);background:var(--red-bg)}
+.name-input{border:none;background:transparent;color:var(--tx);font-size:13px;font-family:inherit;outline:none;width:120px}
+
+.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:var(--bg2);border-radius:var(--r);padding:12px 14px}
+.stat-label{font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:500;color:var(--tx)}
+.stat-sub{font-size:11px;color:var(--tx3);margin-top:3px}
+
+.actions{display:flex;gap:10px;margin-top:1.5rem;flex-wrap:wrap}
+.btn{flex:1;padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;min-width:130px;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-outline{border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)}
+.btn-outline:hover{background:var(--bg2)}
+.btn-primary{border:none;background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0C447C}
+.add-btn{font-size:12px;color:var(--tx2);background:none;border:0.5px dashed var(--bd2);border-radius:var(--r);padding:5px 12px;cursor:pointer;width:100%;margin-top:8px;font-family:inherit}
+.add-btn:hover{background:var(--bg2)}
+.del-btn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;padding:2px 4px}
+.del-btn:hover{color:#E24B4A}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#27500A;color:#C0DD97;font-size:13px;padding:9px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+@media(max-width:600px){.settings-grid{grid-template-columns:1fr 1fr}.summary-grid{grid-template-columns:1fr 1fr}}
+@media print{.actions,.add-btn,.del-btn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Attendance Tracker</h1>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">Settings</span></div>
+  <div class="card-body">
+    <div class="settings-grid">
+      <div class="field"><label>Cohort / Group</label><input id="cohort" placeholder="e.g. Technical Support Batch 1"/></div>
+      <div class="field"><label>Total training days</label><input id="total-days" type="number" min="1" max="90" value="10" oninput="initGrid()"/></div>
+      <div class="field"><label>Start date</label><input id="start-date" type="date"/></div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="dot dot-P"></div>P = Present</div>
+      <div class="legend-item"><div class="dot dot-A"></div>A = Absent</div>
+      <div class="legend-item"><div class="dot dot-L"></div>L = Late</div>
+      <div class="legend-item"><div class="dot dot-blank"></div>— = Not marked</div>
+      <span style="font-size:12px;color:var(--tx3);margin-left:auto">Click a cell to cycle status</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">Attendance grid</span></div>
+  <div class="card-body" style="padding:12px 0">
+    <div class="scroll-wrap">
+      <table id="att-table"></table>
+    </div>
+    <div style="padding:0 18px"><button class="add-btn" onclick="addTrainee()">+ Add trainee</button></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-green">Summary</span></div>
+  <div class="card-body"><div class="summary-grid" id="summary"></div></div>
+</div>
+
+<div class="actions">
+  <button class="btn btn-outline" onclick="copyReport()">Copy report</button>
+  <button class="btn btn-primary" onclick="window.print()">Print / Export PDF</button>
+</div>
+</div>
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+const STATUS = ['','P','A','L'];
+let trainees = [{id:1,name:'Trainee 1'},{id:2,name:'Trainee 2'},{id:3,name:'Trainee 3'}];
+let grid = {};
+let totalDays = 10;
+let tc = 3;
+
+function initGrid() {
+  totalDays = parseInt(document.getElementById('total-days').value)||10;
+  trainees.forEach(t => {
+    if(!grid[t.id]) grid[t.id]={};
+    for(let d=1;d<=totalDays;d++) if(grid[t.id][d]===undefined) grid[t.id][d]='';
+  });
+  render();
+}
+
+function addTrainee() {
+  tc++;
+  const t={id:tc,name:'Trainee '+tc};
+  trainees.push(t);
+  grid[tc]={};
+  for(let d=1;d<=totalDays;d++) grid[tc][d]='';
+  render();
+}
+
+function removeTrainee(id) {
+  trainees=trainees.filter(t=>t.id!==id);
+  delete grid[id];
+  render();
+}
+
+function cycleCell(tid,day) {
+  const cur=grid[tid][day]||'';
+  const idx=STATUS.indexOf(cur);
+  grid[tid][day]=STATUS[(idx+1)%STATUS.length];
+  render();
+}
+
+function getRate(tid) {
+  const days=Object.values(grid[tid]||{});
+  const marked=days.filter(s=>s!=='');
+  const present=days.filter(s=>s==='P').length;
+  if(!marked.length) return null;
+  return Math.round(present/marked.length*100);
+}
+
+function getDayDate(day) {
+  const start=document.getElementById('start-date').value;
+  if(!start) return 'Day '+day;
+  const d=new Date(start);
+  d.setDate(d.getDate()+day-1);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+}
+
+function render() {
+  totalDays=parseInt(document.getElementById('total-days').value)||10;
+  let html='<thead><tr><th>Name</th>';
+  for(let d=1;d<=totalDays;d++) html+=`<th>${getDayDate(d)}</th>`;
+  html+='<th>Rate</th><th></th></tr></thead><tbody>';
+  trainees.forEach((tr,i)=>{
+    html+=`<tr><td><input class="name-input" value="${tr.name}" onchange="trainees.find(x=>x.id===${tr.id}).name=this.value"/></td>`;
+    for(let d=1;d<=totalDays;d++){
+      const s=grid[tr.id]?.[d]||'';
+      html+=`<td><div class="att-cell att-${s||'blank'}" onclick="cycleCell(${tr.id},${d})">${s||'—'}</div></td>`;
+    }
+    const rate=getRate(tr.id);
+    const cls=rate===null?'':rate>=90?'rate-good':rate>=70?'rate-mid':'rate-bad';
+    html+=`<td><span class="rate-cell ${cls}">${rate!==null?rate+'%':'—'}</span></td>`;
+    html+=`<td><button class="del-btn" onclick="removeTrainee(${tr.id})">✕</button></td></tr>`;
+  });
+  html+='<tr style="background:var(--bg2)"><td style="font-size:11px;color:var(--tx2);font-weight:500;padding:6px 10px">Day total</td>';
+  for(let d=1;d<=totalDays;d++){
+    const present=trainees.filter(t=>(grid[t.id]||{})[d]==='P').length;
+    html+=`<td style="font-size:11px;color:var(--tx2);text-align:center">${present}/${trainees.length}</td>`;
+  }
+  html+='<td></td><td></td></tr></tbody>';
+  document.getElementById('att-table').innerHTML=html;
+  renderSummary();
+}
+
+function renderSummary() {
+  const total=trainees.length;
+  const allRates=trainees.map(t=>getRate(t.id)).filter(r=>r!==null);
+  const avg=allRates.length?Math.round(allRates.reduce((a,b)=>a+b,0)/allRates.length):0;
+  const perfect=allRates.filter(r=>r===100).length;
+  const atRisk=allRates.filter(r=>r<70).length;
+  document.getElementById('summary').innerHTML=`
+    <div class="stat"><div class="stat-label">Total trainees</div><div class="stat-value">${total}</div></div>
+    <div class="stat"><div class="stat-label">Avg attendance</div><div class="stat-value">${avg}%</div><div class="stat-sub">across all trainees</div></div>
+    <div class="stat"><div class="stat-label">Perfect attendance</div><div class="stat-value" style="color:var(--green)">${perfect}</div><div class="stat-sub">100% present</div></div>
+    <div class="stat"><div class="stat-label">At risk</div><div class="stat-value" style="color:var(--red)">${atRisk}</div><div class="stat-sub">below 70% attendance</div></div>`;
+}
+
+function copyReport() {
+  const cohort=document.getElementById('cohort').value||'—';
+  let lines=[`ATTENDANCE REPORT\nCohort: ${cohort} | Total days: ${totalDays}\n`];
+  trainees.forEach(tr=>{
+    const rate=getRate(tr.id);
+    const days=[];
+    for(let d=1;d<=totalDays;d++) days.push((grid[tr.id]||{})[d]||'—');
+    lines.push(`${tr.name.padEnd(22)}[${days.join(' ')}]  Rate: ${rate!==null?rate+'%':'—'}`);
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);
+  });
+}
+
+document.getElementById('start-date').addEventListener('change',render);
+initGrid();
+</script>
+</body>
+</html>

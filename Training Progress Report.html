@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Training Progress Report</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#999;
+  --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
+  --blue-bg:#E6F1FB;--blue-tx:#0C447C;--blue-mid:#185FA5;
+  --green-bg:#EAF3DE;--green-tx:#27500A;--green-mid:#3B6D11;
+  --amber-bg:#FAEEDA;--amber-tx:#633806;--amber-mid:#854F0B;
+  --red-bg:#FCEBEB;--red-tx:#791F1F;--red-mid:#A32D2D;
+  --teal-bg:#E1F5EE;--teal-tx:#085041;--teal-mid:#0F6E56;
+  --r:8px;--rl:12px
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
+    --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+    --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+    --blue-bg:#0C447C;--blue-tx:#B5D4F4;
+    --green-bg:#27500A;--green-tx:#C0DD97;
+    --amber-bg:#633806;--amber-tx:#FAC775;
+    --red-bg:#791F1F;--red-tx:#F7C1C1;
+    --teal-bg:#085041;--teal-tx:#9FE1CB
+  }
+}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg2);color:var(--tx);min-height:100vh;padding:2rem 1rem}
+.page{max-width:860px;margin:0 auto}
+
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px}
+.page-title{font-size:20px;font-weight:500;color:var(--tx)}
+.phase-pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx2);transition:all 0.15s;white-space:nowrap}
+.pill.active{background:var(--blue-mid);color:#fff;border-color:var(--blue-mid)}
+.pill-custom{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;border:0.5px dashed var(--bd2);background:transparent;color:var(--tx2);cursor:pointer;font-family:inherit;transition:all 0.15s}
+.pill-custom:hover,.pill-custom.active{border-color:var(--blue-mid);color:var(--blue-mid)}
+
+.report-card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:14px 18px;border-bottom:0.5px solid var(--bd);background:var(--bg2);display:flex;align-items:center;gap:10px}
+.card-body{padding:16px 18px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.badge-blue{background:var(--blue-bg);color:var(--blue-tx)}
+.badge-green{background:var(--green-bg);color:var(--green-tx)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-tx)}
+.badge-red{background:var(--red-bg);color:var(--red-tx)}
+.badge-teal{background:var(--teal-bg);color:var(--teal-tx)}
+.card-title{font-size:13px;font-weight:500;color:var(--tx)}
+.card-sub{font-size:11px;color:var(--tx3);margin-left:auto}
+
+.meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.meta-item label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
+.meta-item input,.meta-item select{width:100%;border:0.5px solid var(--bd2);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none;transition:border-color 0.2s}
+.meta-item input:focus,.meta-item select:focus{border-color:var(--blue-mid);background:var(--bg)}
+
+.progress-wrap{margin-bottom:14px}
+.progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label span{font-size:12px;color:var(--tx2)}
+.progress-label strong{font-size:13px;font-weight:500;color:var(--tx)}
+.progress-track{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width 0.4s ease;background:var(--blue-mid)}
+.progress-fill.green{background:var(--green-mid)}
+.progress-fill.amber{background:var(--amber-mid)}
+.progress-fill.red{background:var(--red-mid)}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+.stat-card{background:var(--bg2);border-radius:var(--r);padding:12px 14px}
+.stat-label{font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:500;color:var(--tx);line-height:1}
+.stat-sub{font-size:11px;color:var(--tx3);margin-top:4px}
+
+.days-timeline{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1.25rem}
+.day-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;border:0.5px solid var(--bd);background:var(--bg2);color:var(--tx3);cursor:pointer;transition:all 0.15s;position:relative}
+.day-dot.done{background:var(--green-bg);color:var(--green-tx);border-color:var(--green-mid)}
+.day-dot.today{background:var(--blue-mid);color:#fff;border-color:var(--blue-mid)}
+.day-dot.fail{background:var(--red-bg);color:var(--red-tx);border-color:var(--red-mid)}
+.day-dot:hover .day-tooltip{display:block}
+.day-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;z-index:10;pointer-events:none}
+
+.trainee-table{width:100%;border-collapse:collapse;font-size:13px}
+.trainee-table th{text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--tx2);border-bottom:0.5px solid var(--bd);text-transform:uppercase;letter-spacing:0.04em}
+.trainee-table td{padding:8px 10px;border-bottom:0.5px solid var(--bd);color:var(--tx);vertical-align:middle}
+.trainee-table tr:last-child td{border-bottom:none}
+.trainee-table tr:hover td{background:var(--bg2)}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.dot-active{background:#3B6D11}
+.dot-drop{background:#A32D2D}
+.dot-watch{background:#854F0B}
+.score-bar{display:flex;align-items:center;gap:8px}
+.score-track{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.score-fill{height:100%;border-radius:3px;background:var(--blue-mid)}
+
+.section-row{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.text-row{display:flex;gap:8px;align-items:flex-start}
+.row-num{font-size:12px;color:var(--tx3);padding-top:8px;min-width:20px;text-align:right;flex-shrink:0}
+.row-ta{flex:1;border:0.5px solid var(--bd);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;resize:none;line-height:1.5;min-height:36px;outline:none;transition:border-color 0.2s,background 0.2s}
+.row-ta:focus{border-color:var(--bd2);background:var(--bg)}
+.row-del{padding-top:8px;cursor:pointer;font-size:14px;color:var(--tx3);background:none;border:none;flex-shrink:0;transition:color 0.15s}
+.row-del:hover{color:#E24B4A}
+.add-btn{font-size:12px;color:var(--tx2);background:none;border:0.5px dashed var(--bd2);border-radius:var(--r);padding:5px 12px;cursor:pointer;width:100%;margin-top:4px;font-family:inherit;transition:background 0.15s}
+.add-btn:hover{background:var(--bg2)}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.5rem}
+.btn{flex:1;padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.15s;min-width:130px}
+.btn:active{transform:scale(0.98)}
+.btn-outline{border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)}
+.btn-outline:hover{background:var(--bg2)}
+.btn-primary{border:none;background:var(--blue-mid);color:#fff}
+.btn-primary:hover{background:#0C447C}
+
+.custom-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center}
+.custom-modal-bg.open{display:flex}
+.custom-modal{background:var(--bg);border-radius:var(--rl);border:0.5px solid var(--bd);padding:1.5rem;min-width:280px;max-width:360px;width:90%}
+.modal-title{font-size:15px;font-weight:500;color:var(--tx);margin-bottom:1rem}
+.modal-field{margin-bottom:12px}
+.modal-field label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
+.modal-field input{width:100%;border:0.5px solid var(--bd2);border-radius:var(--r);padding:8px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none}
+.modal-field input:focus{border-color:var(--blue-mid)}
+.modal-actions{display:flex;gap:8px;margin-top:1rem}
+.modal-actions .btn{padding:8px 14px;font-size:13px}
+
+.toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none}
+.toast{background:#27500A;color:#C0DD97;font-size:13px;padding:9px 20px;border-radius:20px;opacity:0;transition:opacity 0.3s;white-space:nowrap}
+.toast.show{opacity:1}
+
+@media(max-width:600px){
+  .meta-grid{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:420px){
+  .meta-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top-bar">
+    <div class="page-title">Training Progress Report</div>
+    <div class="phase-pills">
+      <button class="pill active" onclick="setPhase(5,this)">5 days</button>
+      <button class="pill" onclick="setPhase(10,this)">10 days</button>
+      <button class="pill" onclick="setPhase(30,this)">1 month</button>
+      <button class="pill" onclick="setPhase(60,this)">2 months</button>
+      <button class="pill-custom" onclick="openCustom()" id="custom-pill">+ Custom</button>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="card-header">
+      <span class="badge badge-blue" id="phase-badge">Phase: 5-day training</span>
+      <span class="card-sub" id="phase-date-range"></span>
+    </div>
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="meta-item">
+          <label>Reporter</label>
+          <input type="text" id="reporter" placeholder="Your name"/>
+        </div>
+        <div class="meta-item">
+          <label>Department</label>
+          <input type="text" id="dept" placeholder="e.g. IT / Technical Support"/>
+        </div>
+        <div class="meta-item">
+          <label>Submitted to</label>
+          <input type="text" id="receiver" placeholder="e.g. HR Manager"/>
+        </div>
+        <div class="meta-item">
+          <label>Start date</label>
+          <input type="date" id="start-date"/>
+        </div>
+        <div class="meta-item">
+          <label>Total trainees</label>
+          <input type="number" id="total-trainees" min="1" value="10" oninput="updateStats()"/>
+        </div>
+        <div class="meta-item">
+          <label>Dropped / failed</label>
+          <input type="number" id="dropped" min="0" value="2" oninput="updateStats()"/>
+        </div>
+      </div>
+
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card"><div class="stat-label">Total days</div><div class="stat-value" id="st-total">5</div><div class="stat-sub">training duration</div></div>
+        <div class="stat-card"><div class="stat-label">Days completed</div><div class="stat-value" id="st-done">0</div><div class="stat-sub">of <span id="st-total-small">5</span></div></div>
+        <div class="stat-card"><div class="stat-label">Trainees active</div><div class="stat-value" id="st-active">8</div><div class="stat-sub">of <span id="st-total2">10</span></div></div>
+        <div class="stat-card"><div class="stat-label">Drop rate</div><div class="stat-value" id="st-drop">20%</div><div class="stat-sub">dropped / failed</div></div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Overall progress</span><strong id="prog-pct">0%</strong></div>
+        <div class="progress-track"><div class="progress-fill" id="prog-bar" style="width:0%"></div></div>
+      </div>
+
+      <div style="margin-bottom:8px;font-size:12px;color:var(--tx2)">Day-by-day tracker — click to toggle status</div>
+      <div class="days-timeline" id="days-timeline"></div>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="card-header">
+      <span class="badge badge-teal">Trainee overview</span>
+      <span class="card-title" style="margin-left:4px">Individual status</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      <table class="trainee-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Score / Progress</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody id="trainee-body"></tbody>
+      </table>
+      <div style="padding:10px 18px;border-top:0.5px solid var(--bd)">
+        <button class="add-btn" onclick="addTrainee()">+ Add trainee</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="card-header"><span class="badge badge-green">Progress</span><span class="card-title" style="margin-left:4px">Results this period</span></div>
+    <div class="card-body">
+      <div class="section-row" id="progress-list"></div>
+      <button class="add-btn" onclick="addTextRow('progress-list','Describe a completed result...')">+ Add item</button>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="card-header"><span class="badge badge-blue">Plans</span><span class="card-title" style="margin-left:4px">Upcoming next period</span></div>
+    <div class="card-body">
+      <div class="section-row" id="plan-list"></div>
+      <button class="add-btn" onclick="addTextRow('plan-list','Describe an upcoming plan...')">+ Add item</button>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="card-header"><span class="badge badge-amber">Issues</span><span class="card-title" style="margin-left:4px">Challenges &amp; support needed</span></div>
+    <div class="card-body">
+      <div class="section-row" id="issue-list"></div>
+      <button class="add-btn" onclick="addTextRow('issue-list','Describe an issue or support request...')">+ Add item</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-outline" onclick="copyReport()">Copy report text</button>
+    <button class="btn btn-primary" onclick="window.print()">Print / Export PDF</button>
+  </div>
+</div>
+
+<div class="custom-modal-bg" id="custom-modal-bg">
+  <div class="custom-modal">
+    <div class="modal-title">Custom training duration</div>
+    <div class="modal-field">
+      <label>Label (e.g. "3 weeks")</label>
+      <input type="text" id="custom-label" placeholder="3 weeks"/>
+    </div>
+    <div class="modal-field">
+      <label>Total training days</label>
+      <input type="number" id="custom-days" min="1" max="365" value="15" placeholder="15"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeCustom()">Cancel</button>
+      <button class="btn btn-primary" onclick="applyCustom()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast">Copied to clipboard!</div></div>
+
+<script>
+let totalDays = 5;
+let dayStates = [];
+let trainees = [];
+let traineeCounter = 0;
+
+function setPhase(days, btn) {
+  totalDays = days;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('custom-pill').classList.remove('active');
+  if(btn) btn.classList.add('active');
+  const labels = {5:'5-day training',10:'10-day training',30:'1-month training',60:'2-month training'};
+  document.getElementById('phase-badge').textContent = 'Phase: ' + (labels[days] || days+'-day training');
+  initDays();
+  updateStats();
+  updateDateRange();
+}
+
+function initDays() {
+  dayStates = Array(totalDays).fill('pending');
+  renderTimeline();
+}
+
+function renderTimeline() {
+  const wrap = document.getElementById('days-timeline');
+  wrap.innerHTML = '';
+  dayStates.forEach((state, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'day-dot ' + (state === 'done' ? 'done' : state === 'today' ? 'today' : state === 'fail' ? 'fail' : '');
+    dot.textContent = i+1;
+    const tip = document.createElement('div');
+    tip.className = 'day-tooltip';
+    tip.textContent = 'Day '+(i+1)+' — '+state;
+    dot.appendChild(tip);
+    dot.onclick = () => cycleDay(i);
+    wrap.appendChild(dot);
+  });
+  updateProgress();
+}
+
+function cycleDay(i) {
+  const cycle = ['pending','today','done','fail'];
+  const idx = cycle.indexOf(dayStates[i]);
+  dayStates[i] = cycle[(idx+1) % cycle.length];
+  renderTimeline();
+}
+
+function updateProgress() {
+  const done = dayStates.filter(s => s==='done').length;
+  const pct = totalDays > 0 ? Math.round(done / totalDays * 100) : 0;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  const bar = document.getElementById('prog-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'progress-fill' + (pct >= 80 ? ' green' : pct >= 40 ? '' : ' amber');
+  document.getElementById('st-done').textContent = done;
+  document.getElementById('st-total-small').textContent = totalDays;
+}
+
+function updateStats() {
+  const total = parseInt(document.getElementById('total-trainees').value) || 0;
+  const dropped = parseInt(document.getElementById('dropped').value) || 0;
+  const active = Math.max(0, total - dropped);
+  const rate = total > 0 ? Math.round(dropped / total * 100) : 0;
+  document.getElementById('st-total').textContent = totalDays;
+  document.getElementById('st-active').textContent = active;
+  document.getElementById('st-total2').textContent = total;
+  document.getElementById('st-drop').textContent = rate + '%';
+  updateProgress();
+}
+
+function updateDateRange() {
+  const start = document.getElementById('start-date').value;
+  if(!start) { document.getElementById('phase-date-range').textContent = ''; return; }
+  const s = new Date(start);
+  const e = new Date(s);
+  e.setDate(e.getDate() + totalDays - 1);
+  const fmt = d => d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('phase-date-range').textContent = fmt(s) + ' – ' + fmt(e);
+}
+
+document.getElementById('start-date').addEventListener('change', updateDateRange);
+document.getElementById('total-trainees').addEventListener('input', updateStats);
+document.getElementById('dropped').addEventListener('input', updateStats);
+
+function addTrainee() {
+  traineeCounter++;
+  const id = traineeCounter;
+  trainees.push({id, name:'Trainee '+id, status:'active', score:80, note:''});
+  renderTrainees();
+}
+
+function removeTrainee(id) {
+  trainees = trainees.filter(t => t.id !== id);
+  renderTrainees();
+}
+
+function renderTrainees() {
+  const tbody = document.getElementById('trainee-body');
+  tbody.innerHTML = '';
+  trainees.forEach((t, idx) => {
+    const tr = document.createElement('tr');
+    const statusOpts = ['active','watch','drop'].map(s =>
+      `<option value="${s}" ${t.status===s?'selected':''}>${s==='active'?'Active':s==='watch'?'Watch':'Dropped'}</option>`
+    ).join('');
+    tr.innerHTML = `
+      <td style="color:var(--tx3);font-size:12px">${idx+1}</td>
+      <td><input value="${t.name}" onchange="updateTrainee(${t.id},'name',this.value)" style="border:none;background:transparent;color:var(--tx);font-size:13px;width:120px;outline:none;font-family:inherit"/></td>
+      <td>
+        <span class="status-dot dot-${t.status}"></span>
+        <select onchange="updateTrainee(${t.id},'status',this.value)" style="border:none;background:transparent;color:var(--tx);font-size:12px;outline:none;font-family:inherit;cursor:pointer">${statusOpts}</select>
+      </td>
+      <td>
+        <div class="score-bar">
+          <div class="score-track"><div class="score-fill" style="width:${t.score}%"></div></div>
+          <input type="number" min="0" max="100" value="${t.score}" onchange="updateTrainee(${t.id},'score',+this.value)" style="width:44px;border:0.5px solid var(--bd);border-radius:4px;background:var(--bg2);color:var(--tx);font-size:12px;padding:2px 5px;outline:none;font-family:inherit"/>%
+        </div>
+      </td>
+      <td><input value="${t.note}" placeholder="Add note..." onchange="updateTrainee(${t.id},'note',this.value)" style="border:none;background:transparent;color:var(--tx2);font-size:12px;width:100%;outline:none;font-family:inherit"/></td>
+      <td><button onclick="removeTrainee(${t.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:13px">✕</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateTrainee(id, field, val) {
+  const t = trainees.find(x => x.id === id);
+  if(t) { t[field] = val; renderTrainees(); }
+}
+
+function addTextRow(listId, ph) {
+  const list = document.getElementById(listId);
+  const rows = list.querySelectorAll('.text-row');
+  const num = rows.length + 1;
+  const div = document.createElement('div');
+  div.className = 'text-row';
+  div.innerHTML = `<span class="row-num">${num}.</span><textarea class="row-ta" rows="1" placeholder="${ph}" oninput="autoResize(this)"></textarea><button class="row-del" onclick="delTextRow(this)">✕</button>`;
+  list.appendChild(div);
+}
+
+function delTextRow(btn) {
+  const row = btn.closest('.text-row');
+  const list = row.parentElement;
+  if(list.querySelectorAll('.text-row').length > 0) {
+    row.remove();
+    list.querySelectorAll('.row-num').forEach((n,i) => n.textContent = (i+1)+'.');
+  }
+}
+
+function autoResize(el) { el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+
+function openCustom() {
+  document.getElementById('custom-modal-bg').classList.add('open');
+}
+function closeCustom() {
+  document.getElementById('custom-modal-bg').classList.remove('open');
+}
+function applyCustom() {
+  const days = parseInt(document.getElementById('custom-days').value) || 1;
+  const label = document.getElementById('custom-label').value.trim() || (days + ' days');
+  totalDays = days;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  const cp = document.getElementById('custom-pill');
+  cp.textContent = label;
+  cp.classList.add('active');
+  document.getElementById('phase-badge').textContent = 'Phase: ' + label + ' training';
+  closeCustom();
+  initDays();
+  updateStats();
+  updateDateRange();
+}
+
+function getTextList(listId) {
+  return Array.from(document.querySelectorAll(`#${listId} textarea`))
+    .map((t,i) => `  ${i+1}. ${t.value.trim()||'(empty)'}`)
+    .join('\n');
+}
+
+function copyReport() {
+  const r = document.getElementById('reporter').value.trim()||'___';
+  const d = document.getElementById('dept').value.trim()||'___';
+  const to = document.getElementById('receiver').value.trim()||'___';
+  const total = document.getElementById('total-trainees').value;
+  const dropped = document.getElementById('dropped').value;
+  const active = Math.max(0, parseInt(total) - parseInt(dropped));
+  const done = dayStates.filter(s => s==='done').length;
+  const pct = totalDays > 0 ? Math.round(done/totalDays*100) : 0;
+  const phaseName = document.getElementById('phase-badge').textContent.replace('Phase: ','');
+  const range = document.getElementById('phase-date-range').textContent;
+
+  const traineeLines = trainees.map((t,i) =>
+    `  ${i+1}. ${t.name} — ${t.status.toUpperCase()} | Score: ${t.score}%${t.note?' | '+t.note:''}`
+  ).join('\n');
+
+  const text = `TRAINING PROGRESS REPORT
+Reporter: ${r} | Department: ${d} | Submitted to: ${to}
+Phase: ${phaseName}${range?' | '+range:''}
+
+SUMMARY
+- Total training days: ${totalDays}
+- Days completed: ${done} / ${totalDays} (${pct}%)
+- Total trainees: ${total} | Active: ${active} | Dropped: ${dropped}
+- Drop rate: ${Math.round(parseInt(dropped)/parseInt(total)*100)||0}%
+
+TRAINEE STATUS
+${traineeLines||'  (no trainees added)'}
+
+RESULTS THIS PERIOD
+${getTextList('progress-list')||'  (none)'}
+
+UPCOMING PLANS
+${getTextList('plan-list')||'  (none)'}
+
+CHALLENGES & SUPPORT NEEDED
+${getTextList('issue-list')||'  (none)'}`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  });
+}
+
+setPhase(5, null);
+document.querySelector('.pill').classList.add('active');
+addTrainee(); addTrainee(); addTrainee();
+addTextRow('progress-list','Describe a completed result...');
+addTextRow('plan-list','Describe an upcoming plan...');
+addTextRow('issue-list','Describe a challenge or support request...');
+
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('start-date').value = today;
+updateDateRange();
+</script>
+</body>
+</html>

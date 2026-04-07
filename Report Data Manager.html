@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Report Data Manager – Local Storage</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#999;
+  --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-tx:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-tx:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-tx:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-tx:#791F1F;
+  --r:8px;--rl:12px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
+  --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --blue-bg:#0C447C;--blue-tx:#B5D4F4;
+  --green-bg:#27500A;--green-tx:#C0DD97;
+  --amber-bg:#633806;--amber-tx:#FAC775;
+  --red-bg:#791F1F;--red-tx:#F7C1C1;
+}}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg2);color:var(--tx);min-height:100vh;padding:2rem 1rem}
+.page{max-width:860px;margin:0 auto}
+h1{font-size:20px;font-weight:500;margin-bottom:.5rem}
+.subtitle{font-size:13px;color:var(--tx2);margin-bottom:1.5rem}
+.card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:12px 18px;border-bottom:0.5px solid var(--bd);background:var(--bg2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card-body{padding:16px 18px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-blue{background:var(--blue-bg);color:var(--blue-tx)}
+.badge-green{background:var(--green-bg);color:var(--green-tx)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-tx)}
+.badge-red{background:var(--red-bg);color:var(--red-tx)}
+
+.field label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{width:100%;border:0.5px solid var(--bd2);border-radius:var(--r);padding:8px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none}
+.field input:focus,.field textarea:focus{border-color:var(--blue);background:var(--bg)}
+.field textarea{resize:vertical;line-height:1.5;font-family:'Courier New',monospace;font-size:12px}
+
+.save-grid{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:flex-end;margin-bottom:1rem}
+.btn{padding:9px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn-outline{border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)}
+.btn-outline:hover{background:var(--bg2)}
+.btn-primary{border:none;background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0C447C}
+.btn-green{border:none;background:var(--green);color:#fff}
+.btn-green:hover{background:#27500A}
+.btn-red{border:none;background:var(--red);color:#fff;font-size:12px;padding:6px 12px}
+.btn-red:hover{background:#791F1F}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:var(--r)}
+
+.saved-list{display:flex;flex-direction:column;gap:8px}
+.saved-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:0.5px solid var(--bd);border-radius:var(--r);background:var(--bg);transition:background .15s;flex-wrap:wrap}
+.saved-item:hover{background:var(--bg2)}
+.saved-meta{flex:1;min-width:0}
+.saved-name{font-size:14px;font-weight:500;color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.saved-info{font-size:12px;color:var(--tx3)}
+.saved-type{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;flex-shrink:0}
+.type-weekly{background:var(--blue-bg);color:var(--blue-tx)}
+.type-training{background:var(--green-bg);color:var(--green-tx)}
+.type-kpi{background:var(--amber-bg);color:var(--amber-tx)}
+.type-other{background:var(--bg3);color:var(--tx3)}
+.saved-actions{display:flex;gap:6px;flex-shrink:0}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.storage-info{font-size:12px;color:var(--tx3);margin-top:8px}
+.storage-bar-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:6px;max-width:300px}
+.storage-bar-fill{height:100%;border-radius:3px;background:var(--blue);transition:width .4s}
+
+.empty-state{text-align:center;padding:2rem;color:var(--tx3);font-size:14px}
+
+.import-zone{border:0.5px dashed var(--bd2);border-radius:var(--r);padding:1rem;text-align:center;cursor:pointer;transition:background .15s;font-size:13px;color:var(--tx2)}
+.import-zone:hover{background:var(--bg2);border-color:var(--blue)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#27500A;color:#C0DD97;font-size:13px;padding:9px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99;white-space:nowrap}
+.toast.show{opacity:1}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg);border-radius:var(--rl);border:0.5px solid var(--bd);padding:1.5rem;min-width:280px;max-width:420px;width:90%}
+.modal-title{font-size:15px;font-weight:500;margin-bottom:1rem}
+.modal-actions{display:flex;gap:8px;margin-top:1rem}
+.modal-actions .btn{flex:1}
+textarea#json-view{min-height:200px}
+
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}.save-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Report Data Manager</h1>
+<p class="subtitle">Save, load, and manage all your report data — stored locally in your browser.</p>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">Save new report</span></div>
+  <div class="card-body">
+    <div class="form-grid">
+      <div class="field"><label>Report name</label><input id="save-name" placeholder="e.g. Week 14 – Technical Support Training"/></div>
+      <div class="field">
+        <label>Report type</label>
+        <select id="save-type">
+          <option value="weekly">Weekly report</option>
+          <option value="training">Training report</option>
+          <option value="kpi">KPI tracker</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:12px"><label>Data (JSON or plain text)</label><textarea id="save-data" rows="5" placeholder='Paste JSON data from any report, or type notes, key numbers, anything you want to save...'></textarea></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="saveEntry()">Save to browser</button>
+      <button class="btn btn-outline" onclick="clearForm()">Clear</button>
+    </div>
+    <div class="storage-info" id="storage-info"></div>
+    <div class="storage-bar-track"><div class="storage-bar-fill" id="storage-bar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="badge badge-green">Saved reports</span>
+    <span id="save-count" style="font-size:12px;color:var(--tx3);margin-left:4px"></span>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-outline btn-sm" onclick="exportAll()">Export all</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-file').click()">Import</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importFile(this)"/>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="field" style="margin-bottom:12px">
+      <input id="search" placeholder="Search saved reports..." oninput="renderList()"/>
+    </div>
+    <div id="saved-list"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-amber">Quick notes</span><span style="font-size:12px;color:var(--tx3);margin-left:auto">Auto-saved as you type</span></div>
+  <div class="card-body">
+    <textarea id="quick-notes" rows="5" placeholder="Quick notes, reminders, or draft text — saved automatically..." oninput="saveNotes()"></textarea>
+  </div>
+</div>
+</div>
+
+<div class="modal-bg" id="view-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">View saved data</div>
+    <div class="field"><textarea id="json-view" readonly></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="copyModalData()">Copy data</button>
+      <button class="btn btn-primary" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'report_manager_entries';
+const NOTES_KEY = 'report_manager_notes';
+
+function getEntries(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch{return[];}}
+function setEntries(e){localStorage.setItem(STORAGE_KEY,JSON.stringify(e));}
+
+function saveEntry(){
+  const name=document.getElementById('save-name').value.trim();
+  const type=document.getElementById('save-type').value;
+  const data=document.getElementById('save-data').value.trim();
+  if(!name){showToast('Please enter a report name','amber');return;}
+  if(!data){showToast('Please enter some data to save','amber');return;}
+  const entries=getEntries();
+  const entry={id:Date.now(),name,type,data,savedAt:new Date().toISOString()};
+  entries.unshift(entry);
+  setEntries(entries);
+  clearForm();
+  renderList();
+  updateStorageInfo();
+  showToast('Report saved!');
+}
+
+function deleteEntry(id){
+  if(!confirm('Delete this saved report?')) return;
+  setEntries(getEntries().filter(e=>e.id!==id));
+  renderList();
+  updateStorageInfo();
+  showToast('Deleted','red');
+}
+
+function viewEntry(id){
+  const e=getEntries().find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('modal-title').textContent=e.name;
+  document.getElementById('json-view').value=e.data;
+  document.getElementById('view-modal').classList.add('open');
+}
+
+function loadIntoForm(id){
+  const e=getEntries().find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('save-name').value=e.name+' (copy)';
+  document.getElementById('save-type').value=e.type;
+  document.getElementById('save-data').value=e.data;
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('Loaded into form');
+}
+
+function copyModalData(){
+  navigator.clipboard.writeText(document.getElementById('json-view').value).then(()=>showToast('Copied!'));
+}
+
+function closeModal(){document.getElementById('view-modal').classList.remove('open');}
+
+function clearForm(){
+  document.getElementById('save-name').value='';
+  document.getElementById('save-data').value='';
+}
+
+function typeLabel(t){return{weekly:'Weekly',training:'Training',kpi:'KPI',other:'Other'}[t]||'Other';}
+function typeClass(t){return{weekly:'type-weekly',training:'type-training',kpi:'type-kpi',other:'type-other'}[t]||'type-other';}
+
+function renderList(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const entries=getEntries().filter(e=>!q||e.name.toLowerCase().includes(q)||e.type.includes(q));
+  const wrap=document.getElementById('saved-list');
+  document.getElementById('save-count').textContent=`(${getEntries().length} saved)`;
+  if(!entries.length){
+    wrap.innerHTML=`<div class="empty-state">${q?'No results for "'+q+'"':'No saved reports yet. Save one above.'}</div>`;
+    return;
+  }
+  wrap.innerHTML='';
+  entries.forEach(e=>{
+    const d=new Date(e.savedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const div=document.createElement('div');
+    div.className='saved-item';
+    div.innerHTML=`
+      <div class="saved-meta">
+        <div class="saved-name">${e.name}</div>
+        <div class="saved-info">Saved ${d} · ${e.data.length} chars</div>
+      </div>
+      <span class="saved-type ${typeClass(e.type)}">${typeLabel(e.type)}</span>
+      <div class="saved-actions">
+        <button class="btn btn-outline btn-sm" onclick="viewEntry(${e.id})">View</button>
+        <button class="btn btn-outline btn-sm" onclick="loadIntoForm(${e.id})">Edit</button>
+        <button class="btn btn-red btn-sm" onclick="deleteEntry(${e.id})">Delete</button>
+      </div>`;
+    wrap.appendChild(div);
+  });
+}
+
+function updateStorageInfo(){
+  try{
+    const used=new Blob([JSON.stringify(localStorage)]).size;
+    const max=5*1024*1024;
+    const pct=Math.min(100,Math.round(used/max*100));
+    document.getElementById('storage-info').textContent=`Browser storage used: ~${(used/1024).toFixed(1)} KB of ~5 MB (${pct}%)`;
+    document.getElementById('storage-bar').style.width=pct+'%';
+    document.getElementById('storage-bar').style.background=pct>80?'#A32D2D':pct>60?'#854F0B':'#185FA5';
+  }catch(e){}
+}
+
+function exportAll(){
+  const entries=getEntries();
+  if(!entries.length){showToast('Nothing to export','amber');return;}
+  const json=JSON.stringify({exported:new Date().toISOString(),entries},null,2);
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(json);
+  a.download='report_data_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  showToast('Exported!');
+}
+
+function importFile(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      const toImport=parsed.entries||[];
+      if(!toImport.length){showToast('No entries found in file','amber');return;}
+      const existing=getEntries();
+      const merged=[...toImport,...existing];
+      setEntries(merged);
+      renderList();
+      updateStorageInfo();
+      showToast(`Imported ${toImport.length} reports!`);
+    }catch{showToast('Invalid JSON file','red');}
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+function saveNotes(){localStorage.setItem(NOTES_KEY,document.getElementById('quick-notes').value);}
+function loadNotes(){document.getElementById('quick-notes').value=localStorage.getItem(NOTES_KEY)||'';}
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=type==='red'?'#791F1F':type==='amber'?'#633806':'#27500A';
+  t.style.color=type==='red'?'#F7C1C1':type==='amber'?'#FAC775':'#C0DD97';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+document.getElementById('view-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+loadNotes();
+renderList();
+updateStorageInfo();
+</script>
+</body>
+</html>

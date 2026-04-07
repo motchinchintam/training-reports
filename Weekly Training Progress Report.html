@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Print-Ready Report</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --tx:#1a1a1a;--tx2:#555;--tx3:#888;
+  --bd:rgba(0,0,0,0.14);--bd2:rgba(0,0,0,0.25);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-tx:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-tx:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-tx:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-tx:#791F1F;
+  --r:6px;--rl:10px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
+  --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --blue-bg:#0C447C;--blue-tx:#B5D4F4;
+  --green-bg:#27500A;--green-tx:#C0DD97;
+  --amber-bg:#633806;--amber-tx:#FAC775;
+  --red-bg:#791F1F;--red-tx:#F7C1C1;
+}}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg2);color:var(--tx);padding:2rem 1rem}
+
+.controls{max-width:860px;margin:0 auto 1.5rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ctrl-title{font-size:18px;font-weight:500;flex:1;color:var(--tx)}
+.btn{padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)}
+.btn:hover{background:var(--bg2)}
+.btn-primary{border:none;background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0C447C}
+.btn:active{transform:scale(.98)}
+
+.report-page{max-width:860px;margin:0 auto;background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden}
+
+.report-header{padding:24px 32px 20px;border-bottom:3px solid var(--blue);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.report-org{font-size:13px;color:var(--tx3);margin-bottom:4px;outline:none;cursor:text}
+.report-title{font-size:22px;font-weight:600;color:var(--tx);outline:none;cursor:text}
+.report-meta{text-align:right}
+.meta-row{font-size:12px;color:var(--tx2);line-height:1.9}
+.meta-row strong{color:var(--tx);font-weight:500}
+.meta-row span{outline:none;cursor:text}
+
+.report-body{padding:24px 32px}
+.section{margin-bottom:22px}
+.section-title{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;padding-bottom:6px;border-bottom:0.5px solid var(--bd)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kpi-box{border:0.5px solid var(--bd);border-radius:var(--r);padding:12px 10px;text-align:center}
+.kpi-val{font-size:26px;font-weight:600;color:var(--tx);line-height:1;outline:none;cursor:text}
+.kpi-lbl{font-size:11px;color:var(--tx3);margin-top:5px;text-transform:uppercase;letter-spacing:.04em;outline:none;cursor:text}
+
+.prog-item{margin-bottom:14px}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px}
+.prog-name{font-size:13px;color:var(--tx2);outline:none;cursor:text;flex:1}
+.prog-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.prog-input{width:50px;border:0.5px solid var(--bd2);border-radius:5px;padding:3px 7px;font-size:13px;font-weight:500;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none;text-align:center}
+.prog-input:focus{border-color:var(--blue);background:var(--bg)}
+.prog-sep{font-size:13px;color:var(--tx3)}
+.prog-pct{font-size:13px;font-weight:600;color:var(--tx);min-width:38px;text-align:right}
+.prog-track{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width .3s ease}
+
+table.rep-table{width:100%;border-collapse:collapse;font-size:13px}
+.rep-table th{text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:var(--tx2);background:var(--bg2);border-bottom:0.5px solid var(--bd);text-transform:uppercase;letter-spacing:.04em}
+.rep-table td{padding:8px 10px;border-bottom:0.5px solid var(--bd);color:var(--tx);vertical-align:middle;outline:none}
+.rep-table tr:last-child td{border-bottom:none}
+.rep-table td[contenteditable]:focus{background:var(--bg2)}
+.status-tag{font-size:11px;font-weight:600;padding:2px 9px;border-radius:10px}
+.tag-pass{background:var(--green-bg);color:var(--green-tx)}
+.tag-watch{background:var(--amber-bg);color:var(--amber-tx)}
+.tag-drop{background:var(--red-bg);color:var(--red-tx)}
+
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.bullet-list li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--tx);line-height:1.6}
+.bullet-dot{color:var(--blue);font-weight:700;flex-shrink:0;padding-top:1px}
+.edit-field{outline:none;flex:1;min-width:0;cursor:text}
+.edit-field:empty::before{content:attr(placeholder);color:var(--tx3)}
+
+.del-btn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;padding:2px 4px;flex-shrink:0;line-height:1;transition:color .15s}
+.del-btn:hover{color:var(--red)}
+.add-btn{font-size:12px;color:var(--tx2);background:none;border:0.5px dashed var(--bd2);border-radius:var(--r);padding:5px 12px;cursor:pointer;margin-top:8px;font-family:inherit;transition:background .15s}
+.add-btn:hover{background:var(--bg2)}
+
+.sig-wrap{display:flex;gap:60px;margin-top:2rem;flex-wrap:wrap}
+.sig-box{display:flex;flex-direction:column;gap:4px}
+.sig-line{border-top:0.5px solid var(--bd2);width:180px;padding-top:6px;font-size:12px;color:var(--tx3)}
+.sig-name{font-size:12px;color:var(--tx2);outline:none;cursor:text}
+
+.report-footer{padding:14px 32px;border-top:0.5px solid var(--bd);background:var(--bg2);display:flex;justify-content:space-between;font-size:12px;color:var(--tx3);flex-wrap:wrap;gap:8px}
+.report-footer span{outline:none;cursor:text}
+
+@media print {
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  html,body{background:#fff!important;padding:0!important;margin:0!important}
+  .controls{display:none!important}
+  .report-page{border:none!important;border-radius:0!important;max-width:100%!important}
+  .report-body{padding:18px 24px!important}
+  .report-header{padding:16px 24px 14px!important}
+  .report-footer{padding:10px 24px!important}
+  .section{margin-bottom:16px!important;page-break-inside:avoid}
+  .kpi-grid{page-break-inside:avoid}
+  .prog-input,.prog-sep,.add-btn,.del-btn{display:none!important}
+  .status-tag select{appearance:none!important;pointer-events:none}
+  .prog-pct{display:inline!important}
+  .rep-table{page-break-inside:auto}
+  .rep-table tr{page-break-inside:avoid}
+  @page{margin:12mm 12mm 14mm;size:A4}
+}
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <div class="ctrl-title">Print-Ready Report</div>
+  <button class="btn" onclick="resetDefaults()">Reset to sample</button>
+  <button class="btn" onclick="clearAll()">Clear all</button>
+  <button class="btn btn-primary" onclick="window.print()">Print / Export PDF</button>
+</div>
+
+<div class="report-page">
+  <div class="report-header">
+    <div>
+      <div class="report-org" contenteditable="true">Company / Department Name</div>
+      <div class="report-title" contenteditable="true">Weekly Training Progress Report</div>
+    </div>
+    <div class="report-meta">
+      <div class="meta-row"><strong>Reporter:</strong> <span contenteditable="true" id="m-reporter">Your name</span></div>
+      <div class="meta-row"><strong>Submitted to:</strong> <span contenteditable="true" id="m-receiver">HR Manager</span></div>
+      <div class="meta-row"><strong>Period:</strong> <span contenteditable="true" id="m-period">07 – 13 Apr 2026</span></div>
+      <div class="meta-row"><strong>Date:</strong> <span id="m-date"></span></div>
+      <div class="meta-row"><strong>Phase:</strong> <span contenteditable="true" id="m-phase">10-day Technical Support Training</span></div>
+    </div>
+  </div>
+
+  <div class="report-body">
+
+    <div class="section">
+      <div class="section-title">Key metrics</div>
+      <div class="kpi-grid" id="kpi-grid"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Progress tracker</div>
+      <div id="prog-list"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Trainee status</div>
+      <table class="rep-table">
+        <thead><tr><th>#</th><th>Name</th><th>Status</th><th>Score</th><th class="no-print">Note</th><th class="no-print"></th></tr></thead>
+        <tbody id="trainee-tbody"></tbody>
+      </table>
+      <button class="add-btn" onclick="addTraineeRow()">+ Add trainee</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Results this period</div>
+      <ul class="bullet-list" id="results-list"></ul>
+      <button class="add-btn" onclick="addBullet('results-list')">+ Add item</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Plans for next period</div>
+      <ul class="bullet-list" id="plans-list"></ul>
+      <button class="add-btn" onclick="addBullet('plans-list')">+ Add item</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Issues & support needed</div>
+      <ul class="bullet-list" id="issues-list"></ul>
+      <button class="add-btn" onclick="addBullet('issues-list')">+ Add item</button>
+    </div>
+
+    <div class="sig-wrap">
+      <div class="sig-box">
+        <div class="sig-line">Reporter signature</div>
+        <div class="sig-name" contenteditable="true">Your name</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-line">Approved by</div>
+        <div class="sig-name" contenteditable="true">Manager name</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="report-footer">
+    <span contenteditable="true">Confidential — Internal use only</span>
+    <span id="footer-date"></span>
+  </div>
+</div>
+
+<script>
+var kpiData = [
+  {val:'8', lbl:'Days completed'},
+  {val:'10', lbl:'Total trainees'},
+  {val:'80%', lbl:'Pass rate'},
+  {val:'20%', lbl:'Drop rate'},
+];
+
+var progData = [
+  {name:'Training days completed', actual:8, max:10, color:'#185FA5'},
+  {name:'Average attendance rate', actual:90, max:100, color:'#3B6D11'},
+  {name:'Average test score', actual:75, max:100, color:'#854F0B'},
+];
+
+var traineeData = [
+  {name:'Nguyen Van A', status:'pass', score:'85%', note:'Strong performance'},
+  {name:'Tran Thi B',   status:'pass', score:'78%', note:''},
+  {name:'Le Van C',     status:'watch',score:'63%', note:'Needs support'},
+  {name:'Pham Thi D',  status:'pass', score:'91%', note:'Top performer'},
+  {name:'Hoang Van E', status:'drop', score:'—',   note:'Resigned day 3'},
+];
+
+var resultData = [
+  'Completed 8 of 10 training days on schedule.',
+  'Mid-term assessment on Day 5 — 4 of 5 trainees passed with scores above 70%.',
+  'Average attendance rate maintained at 90% across the cohort.',
+];
+var planData = [
+  'Complete final 2 training days and full-stack onboarding for passing trainees.',
+  'Conduct final assessment on Day 10 to determine advancement eligibility.',
+  'Prepare individual development plans for trainees on the watch list.',
+];
+var issueData = [
+  'Drop rate of 20% (2 of 10 trainees) due to self-withdrawal and performance gaps.',
+  'One trainee on watch list requires additional mentoring — support requested.',
+];
+
+function renderKPI() {
+  var g = document.getElementById('kpi-grid');
+  g.innerHTML = '';
+  kpiData.forEach(function(k, i) {
+    var box = document.createElement('div');
+    box.className = 'kpi-box';
+    box.innerHTML =
+      '<div class="kpi-val" contenteditable="true">' + k.val + '</div>' +
+      '<div class="kpi-lbl" contenteditable="true">' + k.lbl + '</div>';
+    g.appendChild(box);
+  });
+}
+
+function renderProgress() {
+  var wrap = document.getElementById('prog-list');
+  wrap.innerHTML = '';
+  progData.forEach(function(p, i) {
+    var pct = Math.min(100, Math.round(p.actual / p.max * 100));
+    var div = document.createElement('div');
+    div.className = 'prog-item';
+    div.innerHTML =
+      '<div class="prog-row">' +
+        '<div class="prog-name" contenteditable="true">' + p.name + '</div>' +
+        '<div class="prog-controls">' +
+          '<input class="prog-input" type="number" min="0" max="9999" value="' + p.actual + '" data-idx="' + i + '" data-field="actual"/>' +
+          '<span class="prog-sep">/</span>' +
+          '<input class="prog-input" type="number" min="1" max="9999" value="' + p.max + '" data-idx="' + i + '" data-field="max"/>' +
+          '<span class="prog-pct" id="pct-' + i + '">' + pct + '%</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="prog-track"><div class="prog-fill" id="bar-' + i + '" style="width:' + pct + '%;background:' + p.color + '"></div></div>';
+    wrap.appendChild(div);
+  });
+
+  wrap.querySelectorAll('.prog-input').forEach(function(input) {
+    input.addEventListener('input', function() {
+      var idx = parseInt(this.getAttribute('data-idx'));
+      var field = this.getAttribute('data-field');
+      var val = parseFloat(this.value) || 0;
+      if (field === 'actual') progData[idx].actual = val;
+      if (field === 'max') progData[idx].max = val || 1;
+      var p = progData[idx];
+      var pct = Math.min(100, Math.round(p.actual / p.max * 100));
+      var bar = document.getElementById('bar-' + idx);
+      var pctEl = document.getElementById('pct-' + idx);
+      if (bar) bar.style.width = pct + '%';
+      if (pctEl) pctEl.textContent = pct + '%';
+    });
+  });
+}
+
+function makeStatusCell(status) {
+  var map = {
+    pass:  {cls:'tag-pass',  lbl:'Passing'},
+    watch: {cls:'tag-watch', lbl:'Watch'},
+    drop:  {cls:'tag-drop',  lbl:'Dropped'},
+  };
+  var cur = map[status] || map['pass'];
+  var td = document.createElement('td');
+  td.style.padding = '6px 10px';
+
+  var sel = document.createElement('select');
+  sel.className = 'status-tag ' + cur.cls;
+  sel.style.cssText = 'border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;padding:2px 9px;border-radius:10px;appearance:none;outline:none;';
+  sel.innerHTML =
+    '<option value="pass"'  + (status==='pass' ?' selected':'') + '>Passing</option>' +
+    '<option value="watch"' + (status==='watch'?' selected':'') + '>Watch</option>' +
+    '<option value="drop"'  + (status==='drop' ?' selected':'') + '>Dropped</option>';
+  sel.addEventListener('change', function() {
+    var m = {pass:'tag-pass', watch:'tag-watch', drop:'tag-drop'};
+    sel.className = 'status-tag ' + (m[sel.value] || 'tag-pass');
+  });
+  td.appendChild(sel);
+  return td;
+}
+
+function renderTrainees(data) {
+  var tbody = document.getElementById('trainee-tbody');
+  tbody.innerHTML = '';
+  data.forEach(function(t, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="color:var(--tx3);font-size:12px">' + (i+1) + '</td>' +
+      '<td contenteditable="true">' + t.name + '</td>' +
+      '<td class="status-cell"></td>' +
+      '<td contenteditable="true">' + t.score + '</td>' +
+      '<td contenteditable="true" style="color:var(--tx2)">' + t.note + '</td>' +
+      '<td><button class="del-btn" onclick="this.closest(\'tr\').remove()">✕</button></td>';
+    tbody.appendChild(tr);
+    tr.querySelector('.status-cell').replaceWith(makeStatusCell(t.status));
+  });
+}
+
+function addTraineeRow() {
+  var tbody = document.getElementById('trainee-tbody');
+  var i = tbody.querySelectorAll('tr').length;
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td style="color:var(--tx3);font-size:12px">' + (i+1) + '</td>' +
+    '<td contenteditable="true">New trainee</td>' +
+    '<td class="status-cell"></td>' +
+    '<td contenteditable="true">—</td>' +
+    '<td contenteditable="true" style="color:var(--tx2)"></td>' +
+    '<td><button class="del-btn" onclick="this.closest(\'tr\').remove()">✕</button></td>';
+  tbody.appendChild(tr);
+  tr.querySelector('.status-cell').replaceWith(makeStatusCell('pass'));
+}
+
+function renderBullets(listId, items) {
+  var ul = document.getElementById(listId);
+  ul.innerHTML = '';
+  items.forEach(function(text) { addBullet(listId, text); });
+}
+
+function addBullet(listId, text) {
+  var ul = document.getElementById(listId);
+  var li = document.createElement('li');
+  li.innerHTML =
+    '<span class="bullet-dot">•</span>' +
+    '<div class="edit-field" contenteditable="true" placeholder="Type here...">' + (text || '') + '</div>' +
+    '<button class="del-btn" onclick="this.closest(\'li\').remove()">✕</button>';
+  ul.appendChild(li);
+  if (!text) li.querySelector('.edit-field').focus();
+}
+
+function resetDefaults() {
+  kpiData = [
+    {val:'8', lbl:'Days completed'},
+    {val:'10', lbl:'Total trainees'},
+    {val:'80%', lbl:'Pass rate'},
+    {val:'20%', lbl:'Drop rate'},
+  ];
+  progData = [
+    {name:'Training days completed', actual:8, max:10, color:'#185FA5'},
+    {name:'Average attendance rate', actual:90, max:100, color:'#3B6D11'},
+    {name:'Average test score', actual:75, max:100, color:'#854F0B'},
+  ];
+  renderKPI();
+  renderProgress();
+  renderTrainees(traineeData);
+  renderBullets('results-list', resultData);
+  renderBullets('plans-list', planData);
+  renderBullets('issues-list', issueData);
+  document.getElementById('m-reporter').textContent = 'Your name';
+  document.getElementById('m-receiver').textContent = 'HR Manager';
+  document.getElementById('m-period').textContent = '07 – 13 Apr 2026';
+  document.getElementById('m-phase').textContent = '10-day Technical Support Training';
+}
+
+function clearAll() {
+  kpiData = [{val:'—',lbl:'Metric 1'},{val:'—',lbl:'Metric 2'},{val:'—',lbl:'Metric 3'},{val:'—',lbl:'Metric 4'}];
+  progData = [
+    {name:'Progress item 1', actual:0, max:100, color:'#185FA5'},
+    {name:'Progress item 2', actual:0, max:100, color:'#3B6D11'},
+  ];
+  renderKPI();
+  renderProgress();
+  renderTrainees([]);
+  ['results-list','plans-list','issues-list'].forEach(function(id){ document.getElementById(id).innerHTML=''; });
+  ['m-reporter','m-receiver','m-period','m-phase'].forEach(function(id){ document.getElementById(id).textContent=''; });
+}
+
+var now = new Date();
+var dateStr = now.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+document.getElementById('m-date').textContent = dateStr;
+document.getElementById('footer-date').textContent = 'Generated: ' + dateStr;
+
+resetDefaults();
+</script>
+</body>
+</html>

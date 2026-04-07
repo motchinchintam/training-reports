@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Email Report Export</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#999;
+  --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-tx:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-tx:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-tx:#633806;
+  --r:8px;--rl:12px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
+  --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --blue-bg:#0C447C;--blue-tx:#B5D4F4;
+  --green-bg:#27500A;--green-tx:#C0DD97;
+  --amber-bg:#633806;--amber-tx:#FAC775;
+}}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg2);color:var(--tx);min-height:100vh;padding:2rem 1rem}
+.page{max-width:820px;margin:0 auto}
+h1{font-size:20px;font-weight:500;margin-bottom:1.5rem}
+.card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:12px 18px;border-bottom:0.5px solid var(--bd);background:var(--bg2);display:flex;align-items:center;gap:10px}
+.card-body{padding:16px 18px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-blue{background:var(--blue-bg);color:var(--blue-tx)}
+.badge-green{background:var(--green-bg);color:var(--green-tx)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-tx)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.field{margin-bottom:12px}
+.field label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{width:100%;border:0.5px solid var(--bd2);border-radius:var(--r);padding:8px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);background:var(--bg)}
+.field textarea{resize:vertical;line-height:1.5}
+
+.template-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.tpill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx2);transition:all .15s}
+.tpill.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.preview-box{background:var(--bg2);border:0.5px solid var(--bd);border-radius:var(--r);padding:14px 16px;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--tx);min-height:200px;font-family:'Courier New',monospace}
+.preview-header{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.5rem}
+.btn{flex:1;padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;min-width:130px;transition:all .15s;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn:active{transform:scale(.98)}
+.btn-outline{border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)}
+.btn-outline:hover{background:var(--bg2)}
+.btn-primary{border:none;background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0C447C}
+.btn-green{border:none;background:var(--green);color:#fff}
+.btn-green:hover{background:#27500A}
+
+.add-row-btn{font-size:12px;color:var(--tx2);background:none;border:0.5px dashed var(--bd2);border-radius:var(--r);padding:5px 12px;cursor:pointer;width:100%;margin-top:6px;font-family:inherit}
+.add-row-btn:hover{background:var(--bg2)}
+.row-group{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+.row-num{font-size:12px;color:var(--tx3);padding-top:9px;min-width:20px;text-align:right;flex-shrink:0}
+.row-ta{flex:1;border:0.5px solid var(--bd);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;resize:none;line-height:1.5;min-height:36px;outline:none}
+.row-ta:focus{border-color:var(--bd2);background:var(--bg)}
+.del-btn{padding-top:8px;cursor:pointer;font-size:13px;color:var(--tx3);background:none;border:none;flex-shrink:0}
+.del-btn:hover{color:#E24B4A}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#27500A;color:#C0DD97;font-size:13px;padding:9px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+@media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Email Report Export</h1>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">Email header</span></div>
+  <div class="card-body">
+    <div class="grid2">
+      <div class="field"><label>To (recipient email)</label><input id="to" placeholder="manager@company.com"/></div>
+      <div class="field"><label>CC</label><input id="cc" placeholder="hr@company.com (optional)"/></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label>From (your name)</label><input id="from-name" placeholder="Your name"/></div>
+      <div class="field"><label>Your department</label><input id="dept" placeholder="e.g. IT / Technical Support"/></div>
+      <div class="field"><label>Report date</label><input id="report-date" type="date"/></div>
+    </div>
+    <div class="field"><label>Subject</label><input id="subject" placeholder="Auto-generated below — or type your own" oninput="updatePreview()"/></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">Template</span></div>
+  <div class="card-body">
+    <div class="template-pills">
+      <button class="tpill active" onclick="loadTemplate('weekly',this)">Weekly report</button>
+      <button class="tpill" onclick="loadTemplate('training',this)">Training progress</button>
+      <button class="tpill" onclick="loadTemplate('kpi',this)">KPI update</button>
+      <button class="tpill" onclick="loadTemplate('incident',this)">Incident report</button>
+    </div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="field"><label>Period / week</label><input id="period" placeholder="e.g. 07–13 Apr 2026" oninput="updatePreview()"/></div>
+      <div class="field"><label>Phase / training type</label><input id="phase" placeholder="e.g. 10-day Technical Support" oninput="updatePreview()"/></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-green">Content</span></div>
+  <div class="card-body">
+    <div class="field"><label>Progress / results this period</label>
+      <div id="progress-rows"></div>
+      <button class="add-row-btn" onclick="addRow('progress-rows','What was completed...')">+ Add item</button>
+    </div>
+    <div class="field"><label>Plans for next period</label>
+      <div id="plan-rows"></div>
+      <button class="add-row-btn" onclick="addRow('plan-rows','Upcoming plan...')">+ Add item</button>
+    </div>
+    <div class="field"><label>Issues / support needed</label>
+      <div id="issue-rows"></div>
+      <button class="add-row-btn" onclick="addRow('issue-rows','Issue or support request...')">+ Add item</button>
+    </div>
+    <div class="field"><label>Additional notes (optional)</label><textarea id="notes" rows="3" placeholder="Any extra context for the recipient..." oninput="updatePreview()"></textarea></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-amber">Preview</span><span style="font-size:12px;color:var(--tx3);margin-left:auto">Updates live as you type</span></div>
+  <div class="card-body">
+    <div class="preview-header">Email body preview</div>
+    <div class="preview-box" id="preview"></div>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn btn-outline" onclick="copyBody()">Copy email body</button>
+  <button class="btn btn-primary" onclick="openMailto()">Open in Mail client</button>
+  <button class="btn btn-green" onclick="window.print()">Print / PDF</button>
+</div>
+</div>
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+let currentTemplate = 'weekly';
+const templates = {
+  weekly: {subj:(n,p)=>`Weekly Report – ${n} (${p})`, greeting:'I hope this message finds you well. Please find below my weekly report summary.'},
+  training: {subj:(n,p)=>`Training Progress Report – ${p}`, greeting:'Please find below the training progress update for the current period.'},
+  kpi: {subj:(n,p)=>`KPI Update – ${n} (${p})`, greeting:'Here is the KPI and performance update for the period.'},
+  incident: {subj:(n,p)=>`Incident Report – ${n} – ${p}`, greeting:'This report documents an incident that occurred during the period. Details are outlined below.'},
+};
+
+function loadTemplate(type, btn) {
+  currentTemplate = type;
+  document.querySelectorAll('.tpill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  updatePreview();
+}
+
+function addRow(containerId, ph) {
+  const c = document.getElementById(containerId);
+  const rows = c.querySelectorAll('.row-group');
+  const num = rows.length + 1;
+  const div = document.createElement('div');
+  div.className = 'row-group';
+  div.innerHTML = `<span class="row-num">${num}.</span><textarea class="row-ta" rows="1" placeholder="${ph}" oninput="autoR(this);updatePreview()"></textarea><button class="del-btn" onclick="delRow(this)">✕</button>`;
+  c.appendChild(div);
+  updatePreview();
+}
+
+function delRow(btn) {
+  const row = btn.closest('.row-group');
+  const c = row.parentElement;
+  row.remove();
+  c.querySelectorAll('.row-num').forEach((n,i)=>n.textContent=(i+1)+'.');
+  updatePreview();
+}
+
+function autoR(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+
+function getRows(id) {
+  return Array.from(document.querySelectorAll(`#${id} textarea`))
+    .map((t,i)=>`  ${i+1}. ${t.value.trim()||'(not filled)'}`)
+    .filter((_,i,arr)=>arr.length>0)
+    .join('\n');
+}
+
+function v(id){return document.getElementById(id)?.value?.trim()||'';}
+
+function updatePreview() {
+  const name = v('from-name')||'[Your name]';
+  const dept = v('dept')||'[Department]';
+  const period = v('period')||'[Period]';
+  const phase = v('phase');
+  const tmpl = templates[currentTemplate]||templates.weekly;
+  const auto = tmpl.subj(name, period);
+  if(!document.getElementById('subject').value) {}
+
+  const dateStr = v('report-date') ? new Date(v('report-date')).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const progress = getRows('progress-rows');
+  const plans = getRows('plan-rows');
+  const issues = getRows('issue-rows');
+  const notes = v('notes');
+
+  const body = `Dear [Manager's name],
+
+${tmpl.greeting}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Reporter: ${name}
+Department: ${dept}
+Period: ${period}${phase?'\nPhase: '+phase:''}
+Date: ${dateStr}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RESULTS THIS PERIOD
+${progress||'  (none added)'}
+
+UPCOMING PLANS
+${plans||'  (none added)'}
+
+ISSUES / SUPPORT NEEDED
+${issues||'  (none added)'}
+${notes?'\nADDITIONAL NOTES\n  '+notes:''}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Best regards,
+${name}
+${dept}`;
+
+  document.getElementById('preview').textContent = body;
+  if(!document.getElementById('subject').value) {
+    document.getElementById('subject').placeholder = auto;
+  }
+}
+
+function getSubject(){
+  return v('subject') || templates[currentTemplate].subj(v('from-name')||'Report', v('period')||'—');
+}
+
+function copyBody(){
+  const text = document.getElementById('preview').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);
+  });
+}
+
+function openMailto(){
+  const to = v('to');
+  const cc = v('cc');
+  const subj = encodeURIComponent(getSubject());
+  const body = encodeURIComponent(document.getElementById('preview').textContent);
+  const cc_part = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+  window.location.href = `mailto:${to}?subject=${subj}${cc_part}&body=${body}`;
+}
+
+document.getElementById('report-date').value = new Date().toISOString().split('T')[0];
+
+['from-name','dept','period','phase','report-date'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('input',updatePreview);
+  document.getElementById(id)?.addEventListener('change',updatePreview);
+});
+
+addRow('progress-rows','Describe what was completed...');
+addRow('plan-rows','Describe an upcoming plan...');
+addRow('issue-rows','Describe an issue or request...');
+updatePreview();
+</script>
+</body>
+</html>

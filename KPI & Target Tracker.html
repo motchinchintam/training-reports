@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KPI & Target Tracker</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#999;
+  --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-tx:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-tx:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-tx:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-tx:#791F1F;
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-tx:#085041;
+  --r:8px;--rl:12px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
+  --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --blue-bg:#0C447C;--blue-tx:#B5D4F4;
+  --green-bg:#27500A;--green-tx:#C0DD97;
+  --amber-bg:#633806;--amber-tx:#FAC775;
+  --red-bg:#791F1F;--red-tx:#F7C1C1;
+  --teal-bg:#085041;--teal-tx:#9FE1CB;
+}}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg2);color:var(--tx);min-height:100vh;padding:2rem 1rem}
+.page{max-width:860px;margin:0 auto}
+h1{font-size:20px;font-weight:500;margin-bottom:1.5rem}
+.card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:12px 18px;border-bottom:0.5px solid var(--bd);background:var(--bg2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card-body{padding:16px 18px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-blue{background:var(--blue-bg);color:var(--blue-tx)}
+.badge-green{background:var(--green-bg);color:var(--green-tx)}
+.badge-teal{background:var(--teal-bg);color:var(--teal-tx)}
+
+.meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.field label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select{width:100%;border:0.5px solid var(--bd2);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none}
+.field input:focus,.field select:focus{border-color:var(--blue);background:var(--bg)}
+
+.kpi-list{display:flex;flex-direction:column;gap:12px}
+.kpi-item{border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden}
+.kpi-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 100px;gap:8px;padding:12px 14px;align-items:center;background:var(--bg)}
+.kpi-top.header{background:var(--bg2);font-size:11px;color:var(--tx2);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.kpi-bar-wrap{padding:8px 14px 12px;background:var(--bg)}
+.kpi-bar-label{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px}
+.kpi-bar-track{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.cinput{border:0.5px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none;width:100%}
+.cinput:focus{border-color:var(--blue);background:var(--bg)}
+.status-pill{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;text-align:center}
+.s-on-track{background:var(--green-bg);color:var(--green-tx)}
+.s-at-risk{background:var(--amber-bg);color:var(--amber-tx)}
+.s-behind{background:var(--red-bg);color:var(--red-tx)}
+.s-complete{background:var(--teal-bg);color:var(--teal-tx)}
+.s-pending{background:var(--bg3);color:var(--tx3)}
+
+.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:var(--bg2);border-radius:var(--r);padding:12px 14px}
+.stat-label{font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:500;color:var(--tx)}
+.stat-sub{font-size:11px;color:var(--tx3);margin-top:3px}
+
+.actions{display:flex;gap:10px;margin-top:1.5rem;flex-wrap:wrap}
+.btn{flex:1;padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;min-width:130px;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-outline{border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)}
+.btn-outline:hover{background:var(--bg2)}
+.btn-primary{border:none;background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0C447C}
+.add-btn{font-size:12px;color:var(--tx2);background:none;border:0.5px dashed var(--bd2);border-radius:var(--r);padding:8px 12px;cursor:pointer;width:100%;margin-top:4px;font-family:inherit}
+.add-btn:hover{background:var(--bg2)}
+.del-btn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:13px}
+.del-btn:hover{color:#E24B4A}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#27500A;color:#C0DD97;font-size:13px;padding:9px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+@media(max-width:640px){.kpi-top{grid-template-columns:1fr 80px 80px}.kpi-top .hide-sm{display:none}.meta-grid{grid-template-columns:1fr 1fr}.summary-grid{grid-template-columns:1fr 1fr}}
+@media print{.actions,.add-btn,.del-btn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>KPI & Target Tracker</h1>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">Report info</span></div>
+  <div class="card-body">
+    <div class="meta-grid">
+      <div class="field"><label>Team / Program</label><input id="program" placeholder="e.g. Technical Support Training"/></div>
+      <div class="field"><label>Period</label><input id="period" placeholder="e.g. Week 1 – Apr 2026"/></div>
+      <div class="field"><label>Owner</label><input id="owner" placeholder="Your name"/></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">KPIs</span><span style="font-size:12px;color:var(--tx3);margin-left:auto">Enter target & actual — status auto-calculates</span></div>
+  <div class="card-body" style="padding:12px 14px">
+    <div class="kpi-top header">
+      <div>KPI name</div>
+      <div>Target</div>
+      <div>Actual</div>
+      <div class="hide-sm">Unit</div>
+      <div>Status</div>
+    </div>
+    <div class="kpi-list" id="kpi-list"></div>
+    <button class="add-btn" onclick="addKPI()">+ Add KPI</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-green">Summary</span></div>
+  <div class="card-body"><div class="summary-grid" id="summary"></div></div>
+</div>
+
+<div class="actions">
+  <button class="btn btn-outline" onclick="copyReport()">Copy report</button>
+  <button class="btn btn-primary" onclick="window.print()">Print / Export PDF</button>
+</div>
+</div>
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+let kpis = [
+  {id:1,name:'Training days completed',target:10,actual:'',unit:'days'},
+  {id:2,name:'Trainees passing mid-test',target:80,actual:'',unit:'%'},
+  {id:3,name:'Attendance rate',target:90,actual:'',unit:'%'},
+  {id:4,name:'Trainees advancing to full-stack',target:8,actual:'',unit:'people'},
+];
+let kc = 4;
+
+function getStatus(target, actual, unit) {
+  if(actual===''||actual===null) return 'pending';
+  const t=parseFloat(target), a=parseFloat(actual);
+  if(isNaN(t)||isNaN(a)) return 'pending';
+  const pct = a/t;
+  if(pct>=1) return 'complete';
+  if(pct>=0.85) return 'on-track';
+  if(pct>=0.6) return 'at-risk';
+  return 'behind';
+}
+
+function getStatusLabel(s){
+  return {complete:'Complete','on-track':'On track','at-risk':'At risk',behind:'Behind',pending:'Pending'}[s]||'—';
+}
+function getStatusClass(s){
+  return {'on-track':'s-on-track','at-risk':'s-at-risk','behind':'s-behind','complete':'s-complete','pending':'s-pending'}[s]||'s-pending';
+}
+function getBarColor(s){
+  return {'on-track':'#185FA5','at-risk':'#854F0B','behind':'#A32D2D','complete':'#0F6E56','pending':'#B4B2A9'}[s]||'#B4B2A9';
+}
+
+function addKPI() {
+  kc++;
+  kpis.push({id:kc,name:'New KPI',target:100,actual:'',unit:''});
+  render();
+}
+
+function removeKPI(id) {
+  kpis=kpis.filter(k=>k.id!==id);
+  render();
+}
+
+function update(id, field, val) {
+  const k=kpis.find(x=>x.id===id);
+  if(k){ k[field]=field==='target'||field==='actual'?val:val; render(); }
+}
+
+function render() {
+  const list=document.getElementById('kpi-list');
+  list.innerHTML='';
+  kpis.forEach(k=>{
+    const status=getStatus(k.target,k.actual,k.unit);
+    const pct=k.actual!==''&&k.target>0?Math.min(100,Math.round(parseFloat(k.actual)/parseFloat(k.target)*100)):0;
+    const div=document.createElement('div');
+    div.className='kpi-item';
+    div.innerHTML=`
+      <div class="kpi-top">
+        <input class="cinput" value="${k.name}" onchange="update(${k.id},'name',this.value)" placeholder="KPI name"/>
+        <input class="cinput" type="number" value="${k.target}" onchange="update(${k.id},'target',+this.value)" oninput="update(${k.id},'target',+this.value)" placeholder="Target"/>
+        <input class="cinput" type="number" value="${k.actual}" onchange="update(${k.id},'actual',this.value)" oninput="update(${k.id},'actual',this.value)" placeholder="Actual"/>
+        <input class="cinput hide-sm" value="${k.unit}" onchange="update(${k.id},'unit',this.value)" placeholder="Unit"/>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="status-pill ${getStatusClass(status)}">${getStatusLabel(status)}</span>
+          <button class="del-btn" onclick="removeKPI(${k.id})">✕</button>
+        </div>
+      </div>
+      <div class="kpi-bar-wrap">
+        <div class="kpi-bar-label">
+          <span style="color:var(--tx2);font-size:12px">${k.actual!==''?k.actual:0} / ${k.target} ${k.unit}</span>
+          <span style="font-weight:500;color:var(--tx);font-size:12px">${k.actual!==''?pct+'%':'—'}</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:${pct}%;background:${getBarColor(status)}"></div></div>
+      </div>`;
+    list.appendChild(div);
+  });
+  renderSummary();
+}
+
+function renderSummary() {
+  const total=kpis.length;
+  const complete=kpis.filter(k=>getStatus(k.target,k.actual,k.unit)==='complete').length;
+  const onTrack=kpis.filter(k=>getStatus(k.target,k.actual,k.unit)==='on-track').length;
+  const behind=kpis.filter(k=>['behind','at-risk'].includes(getStatus(k.target,k.actual,k.unit))).length;
+  const filled=kpis.filter(k=>k.actual!=='');
+  const avgPct=filled.length?Math.round(filled.reduce((a,k)=>{
+    const p=Math.min(100,Math.round(parseFloat(k.actual)/parseFloat(k.target)*100));
+    return a+(isNaN(p)?0:p);
+  },0)/filled.length):0;
+  document.getElementById('summary').innerHTML=`
+    <div class="stat"><div class="stat-label">Total KPIs</div><div class="stat-value">${total}</div></div>
+    <div class="stat"><div class="stat-label">Completed</div><div class="stat-value" style="color:var(--teal)">${complete}</div><div class="stat-sub">target met</div></div>
+    <div class="stat"><div class="stat-label">On track</div><div class="stat-value" style="color:var(--blue)">${onTrack}</div><div class="stat-sub">≥ 85% of target</div></div>
+    <div class="stat"><div class="stat-label">Behind / at risk</div><div class="stat-value" style="color:var(--red)">${behind}</div><div class="stat-sub">needs attention</div></div>`;
+}
+
+function copyReport() {
+  const prog=document.getElementById('program').value||'—';
+  const per=document.getElementById('period').value||'—';
+  const own=document.getElementById('owner').value||'—';
+  let lines=[`KPI & TARGET REPORT\nProgram: ${prog} | Period: ${per} | Owner: ${own}\n`];
+  kpis.forEach((k,i)=>{
+    const s=getStatus(k.target,k.actual,k.unit);
+    const pct=k.actual!==''?Math.min(100,Math.round(parseFloat(k.actual)/parseFloat(k.target)*100)):'—';
+    lines.push(`${i+1}. ${k.name}\n   Target: ${k.target} ${k.unit} | Actual: ${k.actual||'—'} | ${pct!=='—'?pct+'%':''} | ${getStatusLabel(s)}`);
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);
+  });
+}
+
+render();
+</script>
+</body>
+</html>

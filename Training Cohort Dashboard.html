@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Training Cohort Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#999;
+  --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-tx:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-tx:#27500A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-tx:#633806;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-tx:#791F1F;
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-tx:#085041;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-tx:#3C3489;
+  --r:8px;--rl:12px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1e;--bg2:#2a2a2a;--bg3:#333;
+  --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
+  --bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.2);
+  --blue-bg:#0C447C;--blue-tx:#B5D4F4;
+  --green-bg:#27500A;--green-tx:#C0DD97;
+  --amber-bg:#633806;--amber-tx:#FAC775;
+  --red-bg:#791F1F;--red-tx:#F7C1C1;
+  --teal-bg:#085041;--teal-tx:#9FE1CB;
+  --purple-bg:#3C3489;--purple-tx:#CECBF6;
+}}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg2);color:var(--tx);min-height:100vh;padding:2rem 1rem}
+.page{max-width:1000px;margin:0 auto}
+.top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;gap:12px;flex-wrap:wrap}
+.page-title{font-size:20px;font-weight:500}
+.page-sub{font-size:13px;color:var(--tx2);margin-top:3px}
+.card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1.25rem}
+.card-header{padding:12px 18px;border-bottom:0.5px solid var(--bd);background:var(--bg2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card-body{padding:16px 18px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-blue{background:var(--blue-bg);color:var(--blue-tx)}
+.badge-green{background:var(--green-bg);color:var(--green-tx)}
+.badge-teal{background:var(--teal-bg);color:var(--teal-tx)}
+.badge-purple{background:var(--purple-bg);color:var(--purple-tx)}
+
+.top-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+.stat{background:var(--bg2);border-radius:var(--r);padding:12px 14px}
+.stat-label{font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.stat-value{font-size:24px;font-weight:500;color:var(--tx);line-height:1}
+.stat-sub{font-size:11px;color:var(--tx3);margin-top:4px}
+
+.pipeline{display:flex;align-items:stretch;gap:0;margin-bottom:1.5rem;overflow-x:auto}
+.phase-col{flex:1;min-width:140px;border-right:0.5px solid var(--bd)}
+.phase-col:last-child{border-right:none}
+.phase-head{padding:10px 12px;font-size:12px;font-weight:500;border-bottom:0.5px solid var(--bd)}
+.phase-body{padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-height:120px}
+.trainee-chip{padding:5px 10px;border-radius:20px;font-size:12px;display:flex;align-items:center;gap:6px;border:0.5px solid var(--bd);background:var(--bg);transition:all .15s;cursor:default}
+.trainee-chip:hover{background:var(--bg2)}
+.chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.chip-active .chip-dot{background:var(--green)}
+.chip-watch .chip-dot{background:var(--amber)}
+.chip-dropped .chip-dot{background:var(--red)}
+.chip-graduated .chip-dot{background:var(--teal)}
+.phase-count{font-size:11px;color:var(--tx3);margin-top:auto;padding-top:8px;border-top:0.5px solid var(--bd)}
+.arrow{display:flex;align-items:center;font-size:18px;color:var(--tx3);padding:0 4px;flex-shrink:0;align-self:center}
+
+.trainee-table{width:100%;border-collapse:collapse;font-size:13px}
+.trainee-table th{text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--tx2);border-bottom:0.5px solid var(--bd);background:var(--bg2);text-transform:uppercase;letter-spacing:.04em}
+.trainee-table td{padding:8px 10px;border-bottom:0.5px solid var(--bd);vertical-align:middle}
+.trainee-table tr:last-child td{border-bottom:none}
+.trainee-table tr:hover td{background:var(--bg2)}
+.status-pill{font-size:11px;font-weight:600;padding:2px 9px;border-radius:10px}
+.s-active{background:var(--green-bg);color:var(--green-tx)}
+.s-watch{background:var(--amber-bg);color:var(--amber-tx)}
+.s-dropped{background:var(--red-bg);color:var(--red-tx)}
+.s-graduated{background:var(--teal-bg);color:var(--teal-tx)}
+.phase-pill{font-size:11px;font-weight:500;padding:2px 9px;border-radius:10px;background:var(--blue-bg);color:var(--blue-tx)}
+
+.mini-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;width:60px;display:inline-block;vertical-align:middle}
+.mini-fill{height:100%;border-radius:3px;background:var(--blue)}
+
+.field label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select{width:100%;border:0.5px solid var(--bd2);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none}
+.field input:focus,.field select:focus{border-color:var(--blue);background:var(--bg)}
+.name-input{border:none;background:transparent;color:var(--tx);font-size:13px;font-family:inherit;outline:none;width:110px}
+.cinput{border:0.5px solid var(--bd);border-radius:6px;padding:4px 8px;font-size:12px;background:var(--bg2);color:var(--tx);font-family:inherit;outline:none}
+.cinput:focus{border-color:var(--blue);background:var(--bg)}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.5rem}
+.btn{flex:1;padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;min-width:130px;transition:all .15s}
+.btn:active{transform:scale(.98)}
+.btn-outline{border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx)}
+.btn-outline:hover{background:var(--bg2)}
+.btn-primary{border:none;background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0C447C}
+.add-btn{font-size:12px;color:var(--tx2);background:none;border:0.5px dashed var(--bd2);border-radius:var(--r);padding:5px 12px;cursor:pointer;width:100%;margin-top:8px;font-family:inherit}
+.add-btn:hover{background:var(--bg2)}
+.del-btn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;padding:2px 5px}
+.del-btn:hover{color:#E24B4A}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#27500A;color:#C0DD97;font-size:13px;padding:9px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+@media(max-width:640px){.top-stats{grid-template-columns:1fr 1fr}.pipeline{flex-direction:column}.arrow{transform:rotate(90deg)}}
+@media print{.actions,.add-btn,.del-btn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="top-row">
+  <div>
+    <div class="page-title">Training Cohort Dashboard</div>
+    <div class="page-sub">Full pipeline — from orientation to full-stack</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div class="field" style="width:180px;margin:0"><input id="cohort-name" placeholder="Cohort name..." oninput="renderAll()"/></div>
+    <div class="field" style="width:150px;margin:0"><input id="cohort-date" type="date"/></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="badge badge-blue">Overview</span></div>
+  <div class="card-body">
+    <div class="top-stats" id="top-stats"></div>
+    <div style="font-size:12px;color:var(--tx3);margin-bottom:8px">Training pipeline — drag trainees using the table below</div>
+    <div class="pipeline" id="pipeline"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="badge badge-teal">Trainee roster</span>
+    <span style="font-size:12px;color:var(--tx3);margin-left:auto">Edit phase, status, and score for each trainee</span>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div style="overflow-x:auto">
+      <table class="trainee-table">
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Current phase</th><th>Status</th>
+          <th>Score (%)</th><th>Attendance (%)</th><th>Note</th><th></th>
+        </tr></thead>
+        <tbody id="roster-body"></tbody>
+      </table>
+    </div>
+    <div style="padding:10px 18px;border-top:0.5px solid var(--bd)">
+      <button class="add-btn" onclick="addTrainee()">+ Add trainee</button>
+    </div>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn btn-outline" onclick="copyReport()">Copy report</button>
+  <button class="btn btn-primary" onclick="window.print()">Print / Export PDF</button>
+</div>
+</div>
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+const PHASES = [
+  {id:'orientation',label:'Orientation',days:'Day 1–2',color:'blue'},
+  {id:'phase1',label:'Phase 1',days:'Day 3–5',color:'blue'},
+  {id:'phase2',label:'Phase 2',days:'Day 6–10',color:'teal'},
+  {id:'fullstack',label:'Full-stack',days:'Month 1–2',color:'purple'},
+  {id:'graduated',label:'Graduated',days:'Complete',color:'green'},
+];
+const STATUSES = ['active','watch','dropped','graduated'];
+
+let trainees = [
+  {id:1,name:'Nguyen Van A',phase:'phase2',status:'active',score:85,attendance:95,note:''},
+  {id:2,name:'Tran Thi B',phase:'phase2',status:'active',score:78,attendance:90,note:''},
+  {id:3,name:'Le Van C',phase:'phase1',status:'watch',score:62,attendance:80,note:'Needs attention'},
+  {id:4,name:'Pham Thi D',phase:'fullstack',status:'active',score:91,attendance:100,note:'Top performer'},
+  {id:5,name:'Hoang Van E',phase:'orientation',status:'dropped',score:40,attendance:60,note:'Resigned'},
+  {id:6,name:'Do Thi F',phase:'fullstack',status:'active',score:88,attendance:92,note:''},
+  {id:7,name:'Bui Van G',phase:'phase2',status:'active',score:74,attendance:88,note:''},
+  {id:8,name:'Vo Thi H',phase:'graduated',status:'graduated',score:93,attendance:98,note:''},
+];
+let tc = 8;
+
+function addTrainee(){
+  tc++;
+  trainees.push({id:tc,name:'Trainee '+tc,phase:'orientation',status:'active',score:'',attendance:'',note:''});
+  renderAll();
+}
+
+function removeTrainee(id){trainees=trainees.filter(t=>t.id!==id);renderAll();}
+
+function updateField(id,field,val){
+  const t=trainees.find(x=>x.id===id);
+  if(t){t[field]=val;renderAll();}
+}
+
+function statusClass(s){return{active:'s-active',watch:'s-watch',dropped:'s-dropped',graduated:'s-graduated'}[s]||'s-active';}
+function statusLabel(s){return{active:'Active',watch:'Watch',dropped:'Dropped',graduated:'Graduated'}[s]||s;}
+function phaseLabel(p){return PHASES.find(x=>x.id===p)?.label||p;}
+
+function renderPipeline(){
+  const wrap=document.getElementById('pipeline');
+  let html='';
+  PHASES.forEach((ph,i)=>{
+    const pTrainees=trainees.filter(t=>t.phase===ph.id&&t.status!=='dropped');
+    html+=`<div class="phase-col">
+      <div class="phase-head" style="color:var(--${ph.color});border-bottom-color:var(--bd)">${ph.label}<br><span style="font-size:11px;color:var(--tx3);font-weight:400">${ph.days}</span></div>
+      <div class="phase-body">`;
+    pTrainees.forEach(t=>{
+      html+=`<div class="trainee-chip chip-${t.status}"><div class="chip-dot"></div><span style="font-size:12px">${t.name}</span></div>`;
+    });
+    const dropped=trainees.filter(t=>t.phase===ph.id&&t.status==='dropped').length;
+    html+=`<div class="phase-count">${pTrainees.length} active${dropped?` · ${dropped} dropped`:''}</div>`;
+    html+='</div></div>';
+    if(i<PHASES.length-1) html+=`<div class="arrow">›</div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+function renderRoster(){
+  const tbody=document.getElementById('roster-body');
+  tbody.innerHTML='';
+  trainees.forEach((t,i)=>{
+    const phOpts=PHASES.map(p=>`<option value="${p.id}"${t.phase===p.id?' selected':''}>${p.label}</option>`).join('');
+    const stOpts=STATUSES.map(s=>`<option value="${s}"${t.status===s?' selected':''}>${statusLabel(s)}</option>`).join('');
+    const scoreNum=parseFloat(t.score);
+    const barW=!isNaN(scoreNum)?Math.min(100,scoreNum):0;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="color:var(--tx3);font-size:12px">${i+1}</td>
+      <td><input class="name-input" value="${t.name}" onchange="updateField(${t.id},'name',this.value)"/></td>
+      <td><select class="cinput" onchange="updateField(${t.id},'phase',this.value)">${phOpts}</select></td>
+      <td>
+        <select class="cinput" onchange="updateField(${t.id},'status',this.value)">${stOpts}</select>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:${barW}%"></div></div>
+          <input class="cinput" type="number" min="0" max="100" value="${t.score}" placeholder="—" style="width:50px;text-align:center" oninput="updateField(${t.id},'score',this.value)"/>
+        </div>
+      </td>
+      <td><input class="cinput" type="number" min="0" max="100" value="${t.attendance}" placeholder="—" style="width:60px;text-align:center" oninput="updateField(${t.id},'attendance',this.value)"/></td>
+      <td><input value="${t.note}" placeholder="Note..." onchange="updateField(${t.id},'note',this.value)" style="border:none;background:transparent;color:var(--tx2);font-size:12px;font-family:inherit;outline:none;width:120px"/></td>
+      <td><button class="del-btn" onclick="removeTrainee(${t.id})">✕</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderStats(){
+  const total=trainees.length;
+  const active=trainees.filter(t=>t.status==='active').length;
+  const watch=trainees.filter(t=>t.status==='watch').length;
+  const dropped=trainees.filter(t=>t.status==='dropped').length;
+  const graduated=trainees.filter(t=>t.status==='graduated').length;
+  const scores=trainees.map(t=>parseFloat(t.score)).filter(s=>!isNaN(s));
+  const avgScore=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
+  document.getElementById('top-stats').innerHTML=`
+    <div class="stat"><div class="stat-label">Total enrolled</div><div class="stat-value">${total}</div></div>
+    <div class="stat"><div class="stat-label">Active</div><div class="stat-value" style="color:var(--green)">${active}</div><div class="stat-sub">in training</div></div>
+    <div class="stat"><div class="stat-label">Watch list</div><div class="stat-value" style="color:var(--amber)">${watch}</div><div class="stat-sub">needs attention</div></div>
+    <div class="stat"><div class="stat-label">Dropped</div><div class="stat-value" style="color:var(--red)">${dropped}</div><div class="stat-sub">${total?Math.round(dropped/total*100):0}% drop rate</div></div>
+    <div class="stat"><div class="stat-label">Graduated</div><div class="stat-value" style="color:var(--teal)">${graduated}</div><div class="stat-sub">avg score ${avgScore}%</div></div>`;
+}
+
+function renderAll(){renderStats();renderPipeline();renderRoster();}
+
+function copyReport(){
+  const cohort=document.getElementById('cohort-name').value||'—';
+  const date=document.getElementById('cohort-date').value?new Date(document.getElementById('cohort-date').value).toLocaleDateString('en-GB'):'—';
+  let lines=[`TRAINING COHORT DASHBOARD\nCohort: ${cohort} | Date: ${date}\n`];
+  PHASES.forEach(ph=>{
+    const pT=trainees.filter(t=>t.phase===ph.id);
+    if(pT.length){
+      lines.push(`\n[${ph.label}]`);
+      pT.forEach(t=>lines.push(`  ${t.name.padEnd(20)}${statusLabel(t.status).padEnd(12)}Score: ${t.score||'—'}%  Att: ${t.attendance||'—'}%${t.note?' | '+t.note:''}`));
+    }
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);
+  });
+}
+
+document.getElementById('cohort-date').value=new Date().toISOString().split('T')[0];
+renderAll();
+</script>
+</body>
+</html>
