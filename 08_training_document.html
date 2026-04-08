@@ -49,7 +49,20 @@ body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--b
 .saved-actions .btn{padding:8px 12px;font-size:12px}
 .status-line{font-size:13px;color:var(--tx3)}
 .footer{margin-top:1.5rem;text-align:center;font-size:13px;color:var(--tx3)}
-@media(max-width:560px){.topbar{flex-direction:column;align-items:stretch}.btn{width:100%}.save-row{flex-direction:column;align-items:stretch}.saved-item{flex-direction:column;align-items:stretch}}</style>
+.training-files-container{padding:0}
+.file-list{display:grid;gap:12px}
+.file-item{border:0.5px solid var(--bd);border-radius:14px;padding:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--bg3);justify-content:space-between}
+.file-item-info{flex:1;min-width:200px;display:flex;align-items:center;gap:12px}
+.file-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg);font-weight:600}
+.file-details{flex:1}
+.file-name{font-size:14px;font-weight:600;color:var(--tx);word-break:break-word;margin-bottom:4px}
+.file-meta{font-size:12px;color:var(--tx3)}
+.file-actions{display:flex;gap:8px;flex-wrap:wrap}
+.file-actions .btn{padding:8px 12px;font-size:12px}
+.empty-files{text-align:center;padding:24px;color:var(--tx3);font-size:14px;background:var(--bg2);border-radius:12px;border:1px dashed var(--bd)}
+.meta-item{margin-bottom:16px}
+.meta-item strong{display:block;font-size:12px;color:var(--tx2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em}
+@media(max-width:560px){.topbar{flex-direction:column;align-items:stretch}.btn{width:100%}.save-row{flex-direction:column;align-items:stretch}.saved-item{flex-direction:column;align-items:stretch}.file-item{flex-direction:column;align-items:stretch}.file-item-info{flex-direction:column}}</style>
 </head>
 <body>
 <div class="page-wrap">
@@ -71,9 +84,11 @@ body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--b
       </div>
       <button class="btn btn-primary" onclick="saveDocument()">Save document</button>
       <button class="btn" onclick="newDocument()">New document</button>
-      <button class="btn" onclick="document.getElementById('import-file').click()">Upload file</button>
+      <button class="btn" onclick="document.getElementById('import-file').click()">Upload document</button>
+      <button class="btn" onclick="document.getElementById('training-files-input').click()">Add training files</button>
       <button class="btn" onclick="exportDocument()">Export JSON</button>
       <input type="file" id="import-file" accept=".json,.txt" style="display:none" onchange="importDocument(this.files[0])" />
+      <input type="file" id="training-files-input" accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx,.txt,.mp4,.zip" multiple style="display:none" onchange="handleFileUpload(this.files)" />
     </div>
     <div class="status-line" id="save-status">No saved document loaded.</div>
     <div class="saved-list" id="saved-documents"></div>
@@ -112,6 +127,14 @@ body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--b
       <div class="section-title">Notes & remarks</div>
       <div id="doc-notes" contenteditable="true" class="editable" placeholder="Add any additional comments, observations, or training notes.">Use this area for additional notes that should accompany the training document.</div>
     </div>
+
+    <div class="section">
+      <div class="section-title">Training files</div>
+      <div class="training-files-container">
+        <p style="font-size:14px;color:var(--tx2);margin-bottom:16px;">Upload and manage training materials (PDF, PowerPoint, Excel, Word, Videos, etc.)</p>
+        <div class="file-list" id="training-files-list"></div>
+      </div>
+    </div>
   </div>
 
   <div class="footer">This page is a dedicated training document space. Content is editable directly in the browser.</div>
@@ -119,6 +142,7 @@ body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--b
 <script>
 const STORAGE_KEY = 'training_document_store';
 const DRAFT_KEY = 'training_document_draft';
+const FILES_KEY = 'training_files_store';
 
 function getSavedDocuments() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
@@ -138,6 +162,129 @@ function setCurrentDraft(doc) {
 
 function clearCurrentDraft() {
   localStorage.removeItem(DRAFT_KEY);
+}
+
+function getStoredFiles() {
+  try { return JSON.parse(localStorage.getItem(FILES_KEY)) || []; } catch { return []; }
+}
+
+function setStoredFiles(files) {
+  localStorage.setItem(FILES_KEY, JSON.stringify(files));
+}
+
+function getFileIcon(filename) {
+  const ext = filename.split('.').pop().toLowerCase();
+  const icons = {
+    'pdf': '📄',
+    'ppt': '📊', 'pptx': '📊',
+    'xls': '📋', 'xlsx': '📋',
+    'doc': '📝', 'docx': '📝',
+    'txt': '📄',
+    'mp4': '🎥', 'avi': '🎥', 'mov': '🎥',
+    'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️'
+  };
+  return icons[ext] || '📎';
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+function handleFileUpload(files) {
+  if (!files || files.length === 0) return;
+  
+  const storedFiles = getStoredFiles();
+  
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const fileObj = {
+        id: Date.now() + Math.random().toString(36).substr(2, 9),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        uploadedAt: new Date().toISOString(),
+        data: e.target.result // Base64 encoded file data
+      };
+      storedFiles.push(fileObj);
+      setStoredFiles(storedFiles);
+      renderTrainingFiles();
+      updateStatus('Added file: ' + file.name);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+  
+  // Reset input
+  document.getElementById('training-files-input').value = '';
+}
+
+function downloadFile(fileId) {
+  const files = getStoredFiles();
+  const file = files.find(f => f.id === fileId);
+  if (!file) {
+    updateStatus('File not found.', true);
+    return;
+  }
+  
+  try {
+    const byteArray = new Uint8Array(file.data);
+    const blob = new Blob([byteArray], { type: file.type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    updateStatus('Downloaded: ' + file.name);
+  } catch (err) {
+    updateStatus('Error downloading file.', true);
+  }
+}
+
+function deleteFile(fileId) {
+  if (!confirm('Delete this file?')) return;
+  const files = getStoredFiles();
+  const filtered = files.filter(f => f.id !== fileId);
+  setStoredFiles(filtered);
+  renderTrainingFiles();
+  updateStatus('File deleted.');
+}
+
+function renderTrainingFiles() {
+  const container = document.getElementById('training-files-list');
+  const files = getStoredFiles();
+  
+  if (!files.length) {
+    container.innerHTML = '<div class="empty-files">No training files added yet. Click "Add training files" to upload PowerPoint, PDF, Excel, or other documents.</div>';
+    return;
+  }
+  
+  container.innerHTML = '';
+  files.forEach(file => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    const date = new Date(file.uploadedAt).toLocaleString('en-GB');
+    item.innerHTML = `
+      <div class="file-item-info">
+        <div class="file-icon">${getFileIcon(file.name)}</div>
+        <div class="file-details">
+          <div class="file-name">${file.name}</div>
+          <div class="file-meta">${formatFileSize(file.size)} • ${date}</div>
+        </div>
+      </div>
+      <div class="file-actions">
+        <button class="btn btn-primary" onclick="downloadFile('${file.id}')">Download</button>
+        <button class="btn" onclick="deleteFile('${file.id}')">Delete</button>
+      </div>
+    `;
+    container.appendChild(item);
+  });
 }
 
 function updateStatus(message, isError) {
@@ -317,10 +464,9 @@ function restoreDraft() {
 
 document.addEventListener('DOMContentLoaded', () => {
   renderSavedDocuments();
+  renderTrainingFiles();
   restoreDraft();
 });
 </script>
 </body>
 </html>
-
-
