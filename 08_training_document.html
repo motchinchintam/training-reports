@@ -71,6 +71,9 @@ body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--b
       </div>
       <button class="btn btn-primary" onclick="saveDocument()">Save document</button>
       <button class="btn" onclick="newDocument()">New document</button>
+      <button class="btn" onclick="document.getElementById('import-file').click()">Upload file</button>
+      <button class="btn" onclick="exportDocument()">Export JSON</button>
+      <input type="file" id="import-file" accept=".json,.txt" style="display:none" onchange="importDocument(this.files[0])" />
     </div>
     <div class="status-line" id="save-status">No saved document loaded.</div>
     <div class="saved-list" id="saved-documents"></div>
@@ -256,6 +259,55 @@ function renderSavedDocuments() {
   });
 }
 
+function importDocument(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const text = reader.result;
+    try {
+      const data = JSON.parse(text);
+      if (typeof data === 'object' && data !== null) {
+        writeDocumentFields({
+          id: data.id || document.getElementById('doc-id').value || Date.now().toString(),
+          name: data.name || document.getElementById('doc-name').value || file.name,
+          date: data.date || '',
+          trainer: data.trainer || '',
+          program: data.program || '',
+          summary: data.summary || '',
+          highlights: data.highlights || '',
+          actionPlan: data.actionPlan || data.action || '',
+          notes: data.notes || '',
+        });
+        updateStatus('Imported document from JSON file.');
+        return;
+      }
+    } catch (err) {
+      // not JSON, fall through to plain text import
+    }
+    const plain = text.trim();
+    if (plain) {
+      document.getElementById('doc-notes').innerText = plain;
+      document.getElementById('doc-name').value = file.name.replace(/\.[^.]+$/, '');
+      updateStatus('Imported text file into notes.');
+    } else {
+      updateStatus('Uploaded file was empty or invalid.', true);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function exportDocument() {
+  const doc = readDocumentFields();
+  const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (doc.name || 'training-document').replace(/[^a-z0-9\-_ ]+/gi, '_') + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  updateStatus('Exported current document as JSON.');
+}
+
 function restoreDraft() {
   const draft = getCurrentDraft();
   if (!draft) return;
@@ -270,4 +322,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
