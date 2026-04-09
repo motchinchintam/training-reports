@@ -18,8 +18,8 @@ const TOOLS: LearnCard[] = [
     icon: '🃏',
     name: 'Flashcard Decks',
     badge: 'Memory',
-    desc: 'Create decks of question/answer cards. Flip to reveal, mark Know or Review, track mastery per deck.',
-    tags: ['flip cards', 'memorize', 'decks'],
+    desc: 'Memorise SQL commands, TypeScript syntax, English/Chinese vocabulary. Flip cards, mark Know or Review, track mastery.',
+    tags: ['SQL', 'vocabulary', 'TypeScript', 'Chinese'],
     color: 'purple',
   },
   {
@@ -27,8 +27,8 @@ const TOOLS: LearnCard[] = [
     icon: '🧠',
     name: 'Quiz Builder',
     badge: 'Assessment',
-    desc: 'Build multiple-choice quizzes, take them with instant feedback, and see your final score.',
-    tags: ['MCQ', 'self-test', 'score'],
+    desc: 'Test yourself with multiple-choice quizzes on SQL queries, TypeScript concepts, English grammar, or Chinese characters.',
+    tags: ['SQL quiz', 'TSX', 'grammar', 'self-test'],
     color: 'blue',
   },
   {
@@ -36,8 +36,8 @@ const TOOLS: LearnCard[] = [
     icon: '⏱',
     name: 'Study Timer',
     badge: 'Focus',
-    desc: 'Pomodoro-style timer — 25 min focus + 5 min break. Counts your sessions and total study time.',
-    tags: ['pomodoro', 'focus', 'breaks'],
+    desc: 'Pomodoro-style timer — stay focused during SQL practice, coding, or language drills. Track daily study sessions.',
+    tags: ['pomodoro', 'focus', 'daily habit'],
     color: 'teal',
   },
   {
@@ -45,8 +45,8 @@ const TOOLS: LearnCard[] = [
     icon: '🎯',
     name: 'Learning Goals',
     badge: 'Planning',
-    desc: 'Set learning goals with deadlines and progress. Mark milestones, track completion rate.',
-    tags: ['goals', 'deadline', 'progress'],
+    desc: 'Set goals like "Complete 50 SQL exercises" or "Learn 300 Chinese words". Track deadlines and completion rate.',
+    tags: ['SQL', 'English', 'Chinese', 'TypeScript'],
     color: 'green',
   },
   {
@@ -54,8 +54,8 @@ const TOOLS: LearnCard[] = [
     icon: '📓',
     name: 'Study Notes',
     badge: 'Knowledge',
-    desc: 'Write and organise notes by topic. Search, filter by category, and pin important notes.',
-    tags: ['notes', 'topics', 'search'],
+    desc: 'Write and organise notes by topic — SQL joins, TypeScript types, English grammar rules, Chinese HSK vocab.',
+    tags: ['SQL', 'TSX notes', 'grammar', 'HSK'],
     color: 'amber',
   },
 ];
@@ -66,7 +66,7 @@ export default function LearningHubView({ onNavigate }: LearningHubViewProps) {
       <div className="hub-hero">
         <span className="hub-hero-icon">🎓</span>
         <h1>Learning Hub</h1>
-        <p>Tools to help you study smarter — flashcards, quizzes, timers, goals, and notes all in one place.</p>
+        <p>Study tools built for <strong>Tester</strong> skills (SQL, TypeScript) and <strong>Language</strong> learning (English, Chinese).</p>
       </div>
 
       <div className="hub-section-label">Study tools</div>
@@ -91,6 +91,24 @@ export default function LearningHubView({ onNavigate }: LearningHubViewProps) {
               {card.tags.map(t => <span key={t} className="hub-tag">{t}</span>)}
             </div>
             <div className="hub-open-btn">Open tool →</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hub-section-label" style={{ marginTop: '1.5rem' }}>Learning tracks</div>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '2rem' }}>
+        {[
+          { icon: '🗄️', label: 'SQL', desc: 'Queries, joins, aggregation, indexing', color: 'blue' },
+          { icon: '📘', label: 'TypeScript', desc: 'Types, interfaces, TSX, generics', color: 'purple' },
+          { icon: '🇬🇧', label: 'English', desc: 'Grammar, vocabulary, writing', color: 'teal' },
+          { icon: '🇨🇳', label: 'Chinese', desc: 'HSK vocab, characters, tones', color: 'amber' },
+        ].map(track => (
+          <div key={track.label} className={`hub-track-chip hub-track-${track.color}`}>
+            <span>{track.icon}</span>
+            <div>
+              <div className="hub-track-label">{track.label}</div>
+              <div className="hub-track-desc">{track.desc}</div>
+            </div>
           </div>
         ))}
       </div>

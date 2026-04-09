@@ -808,6 +808,39 @@ body { margin: 0; background: var(--bg); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   MAIN HUB — Quân's Works
+═══════════════════════════════════════════════════════════════════════════ */
+.main-hub-page { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+.main-hub-hero { text-align: center; padding: 2.5rem 1rem 2rem; }
+.main-hub-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: #fff; font-size: 1.6rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1rem; box-shadow: 0 4px 16px rgba(83,74,183,.3);
+}
+.main-hub-title { font-size: 1.9rem; font-weight: 800; color: var(--tx); margin-bottom: .4rem; }
+.main-hub-sub { font-size: 13.5px; color: var(--tx2); max-width: 440px; margin: 0 auto; line-height: 1.6; }
+.main-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 2.5rem; }
+.main-hub-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--rl); padding: 1.5rem; cursor: pointer;
+  transition: box-shadow .18s, transform .14s;
+}
+.main-hub-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.1); transform: translateY(-3px); }
+.main-hub-card.main-blue  { border-top: 4px solid var(--blue); }
+.main-hub-card.main-purple { border-top: 4px solid var(--purple); }
+.main-hub-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: .85rem; }
+.main-hub-card-icon { font-size: 2.2rem; flex: none; }
+.main-hub-card-name { font-size: 1.05rem; font-weight: 800; color: var(--tx); }
+.main-hub-card-subtitle { font-size: 11px; color: var(--tx3); font-weight: 600; margin-top: 2px; text-transform: uppercase; letter-spacing: .06em; }
+.main-hub-card-desc { font-size: 13px; color: var(--tx2); line-height: 1.6; margin-bottom: .85rem; }
+.main-hub-tools { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: .85rem; }
+.main-hub-tool-chip { font-size: 11px; background: var(--bg2); color: var(--tx2); padding: 3px 9px; border-radius: 99px; font-weight: 500; }
+.main-hub-enter { font-size: 13px; font-weight: 700; color: var(--blue); }
+.main-hub-footer { text-align: center; font-size: 11px; color: var(--tx3); padding-top: 1rem; border-top: 1px solid var(--border); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
    LEARNING HUB — shared
 ═══════════════════════════════════════════════════════════════════════════ */
 .hub-page { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
@@ -838,6 +871,14 @@ body { margin: 0; background: var(--bg); }
 .hub-card.hub-purple { border-top: 3px solid var(--purple); }
 .hub-card.hub-amber  { border-top: 3px solid var(--amber); }
 .hub-footer { text-align: center; font-size: 11px; color: var(--tx3); padding-top: 1rem; border-top: 1px solid var(--border); }
+.hub-track-chip { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: .65rem 1rem; flex: 1; min-width: 140px; }
+.hub-track-chip span { font-size: 1.4rem; }
+.hub-track-label { font-weight: 700; font-size: 13px; color: var(--tx); }
+.hub-track-desc { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.hub-track-blue   { border-left: 3px solid var(--blue); }
+.hub-track-purple { border-left: 3px solid var(--purple); }
+.hub-track-teal   { border-left: 3px solid var(--teal); }
+.hub-track-amber  { border-left: 3px solid var(--amber); }
 .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; }
 .filter-btn { font-size: 12px; padding: 4px 12px; border: 1px solid var(--border2); border-radius: 99px; background: var(--bg); color: var(--tx2); cursor: pointer; transition: background .15s, color .15s; }
 .filter-btn:hover { background: var(--bg2); }

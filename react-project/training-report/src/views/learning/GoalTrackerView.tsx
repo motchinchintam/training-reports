@@ -10,19 +10,19 @@ const LS_KEY = 'lh_goals';
 function load(): Goal[] { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; }  }
 function save(g: Goal[]) { localStorage.setItem(LS_KEY, JSON.stringify(g)); }
 
-const CATEGORIES = ['All', 'Language', 'Programming', 'Reading', 'Course', 'Skill', 'Other'];
+const CATEGORIES = ['All', 'SQL', 'TypeScript', 'English', 'Chinese', 'Other'];
 const CAT_COLORS: Record<string, string> = {
-  Language: 'blue', Programming: 'purple', Reading: 'amber',
-  Course: 'teal', Skill: 'green', Other: 'coral'
+  SQL: 'blue', TypeScript: 'purple', English: 'teal', Chinese: 'amber', Other: 'coral',
 };
 
 const SAMPLE: Goal[] = [
-  { id: 1, title: 'Complete JavaScript course', category: 'Programming', description: 'Finish Udemy JS course', target: 60, current: 24, unit: 'lessons', deadline: '2026-05-30', done: false, createdAt: new Date().toISOString() },
-  { id: 2, title: 'Read 12 books this year', category: 'Reading', description: 'One book per month', target: 12, current: 3, unit: 'books', deadline: '2026-12-31', done: false, createdAt: new Date().toISOString() },
-  { id: 3, title: 'Learn 500 English words', category: 'Language', description: 'Daily vocabulary study', target: 500, current: 500, unit: 'words', deadline: '2026-04-30', done: true, createdAt: new Date().toISOString() },
+  { id: 1, title: 'Complete 100 SQL exercises', category: 'SQL', description: 'Practice SELECT, JOIN, GROUP BY, subqueries', target: 100, current: 34, unit: 'exercises', deadline: '2026-06-30', done: false, createdAt: new Date().toISOString() },
+  { id: 2, title: 'Learn TypeScript generics & utility types', category: 'TypeScript', description: 'Cover Partial, Pick, Omit, Record, generics', target: 20, current: 7, unit: 'topics', deadline: '2026-05-31', done: false, createdAt: new Date().toISOString() },
+  { id: 3, title: 'Master 500 HSK2 Chinese words', category: 'Chinese', description: 'Daily flashcard review — 20 words per day', target: 500, current: 120, unit: 'words', deadline: '2026-08-31', done: false, createdAt: new Date().toISOString() },
+  { id: 4, title: 'Read 500 English articles', category: 'English', description: 'One article per day to build reading fluency', target: 500, current: 500, unit: 'articles', deadline: '2026-04-01', done: true, createdAt: new Date().toISOString() },
 ];
 
-const blank = { title: '', category: 'Programming', description: '', target: 100, current: 0, unit: '', deadline: '' };
+const blank = { title: '', category: 'SQL', description: '', target: 100, current: 0, unit: '', deadline: '' };
 
 export default function GoalTrackerView() {
   const [goals, setGoals] = useState<Goal[]>(() => { const d = load(); return d.length ? d : SAMPLE; });
@@ -98,7 +98,7 @@ export default function GoalTrackerView() {
           <div className="tt-card-header"><span className="tt-badge tt-badge-blue">{editId ? 'Edit goal' : 'New goal'}</span></div>
           <div className="tt-card-body">
             <div className="goal-form-grid">
-              <div className="tt-field"><label>Goal title</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Finish React course" /></div>
+              <div className="tt-field"><label>Goal title</label><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Complete 50 SQL exercises" /></div>
               <div className="tt-field"><label>Category</label>
                 <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
                   {CATEGORIES.slice(1).map(c => <option key={c}>{c}</option>)}
@@ -106,7 +106,7 @@ export default function GoalTrackerView() {
               </div>
               <div className="tt-field"><label>Target</label><input type="number" min={1} value={form.target} onChange={e => setForm({ ...form, target: Number(e.target.value) })} /></div>
               <div className="tt-field"><label>Current</label><input type="number" min={0} value={form.current} onChange={e => setForm({ ...form, current: Number(e.target.value) })} /></div>
-              <div className="tt-field"><label>Unit</label><input value={form.unit} onChange={e => setForm({ ...form, unit: e.target.value })} placeholder="e.g. lessons, pages, hours" /></div>
+              <div className="tt-field"><label>Unit</label><input value={form.unit} onChange={e => setForm({ ...form, unit: e.target.value })} placeholder="e.g. exercises, words, topics" /></div>
               <div className="tt-field"><label>Deadline</label><input type="date" value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} /></div>
             </div>
             <div className="tt-field"><label>Description (optional)</label><input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Brief description..." /></div>

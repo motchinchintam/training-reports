@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import MainHubView from './views/MainHubView';
 import HubView from './views/HubView';
 import TestTrackerView from './views/TestTrackerView';
 import AttendanceGridView from './views/AttendanceGridView';
@@ -17,44 +18,46 @@ import StudyNotesView from './views/learning/StudyNotesView';
 import './App.css';
 
 type View =
+  | 'main'
   | 'hub' | 'testtracker' | 'attendance' | 'kpi' | 'email' | 'datamanager' | 'cohort' | 'printreport' | 'document'
   | 'learnhub' | 'flashcard' | 'quiz' | 'studytimer' | 'goals' | 'studynotes';
 
 const NAV: { id: View; label: string; icon: string }[] = [
-  { id: 'hub', label: 'Hub', icon: '🏠' },
-  { id: 'testtracker', label: 'Test Tracker', icon: '📝' },
-  { id: 'attendance', label: 'Attendance', icon: '📅' },
-  { id: 'kpi', label: 'KPI Tracker', icon: '🎯' },
-  { id: 'email', label: 'Email Export', icon: '✉' },
-  { id: 'datamanager', label: 'Data Manager', icon: '💾' },
-  { id: 'cohort', label: 'Cohort Dashboard', icon: '🗂' },
-  { id: 'printreport', label: 'Print Report', icon: '🖨' },
-  { id: 'document', label: 'Training Doc', icon: '📄' },
-  { id: 'learnhub', label: 'Learning Hub', icon: '🎓' },
-  { id: 'flashcard', label: 'Flashcards', icon: '🃏' },
-  { id: 'quiz', label: 'Quiz Builder', icon: '🧠' },
-  { id: 'studytimer', label: 'Study Timer', icon: '⏱' },
-  { id: 'goals', label: 'Learning Goals', icon: '🎯' },
-  { id: 'studynotes', label: 'Study Notes', icon: '📓' },
+  { id: 'main',        label: "Quân's Works",      icon: '🏠' },
+  { id: 'hub',         label: 'Overview',           icon: '📋' },
+  { id: 'testtracker', label: 'Test Tracker',       icon: '📝' },
+  { id: 'attendance',  label: 'Attendance',         icon: '📅' },
+  { id: 'kpi',         label: 'KPI Tracker',        icon: '🎯' },
+  { id: 'email',       label: 'Email Export',       icon: '✉' },
+  { id: 'datamanager', label: 'Data Manager',       icon: '💾' },
+  { id: 'cohort',      label: 'Cohort Dashboard',   icon: '🗂' },
+  { id: 'printreport', label: 'Print Report',       icon: '🖨' },
+  { id: 'document',    label: 'Training Doc',       icon: '📄' },
+  { id: 'learnhub',    label: 'Overview',           icon: '🎓' },
+  { id: 'flashcard',   label: 'Flashcards',         icon: '🃏' },
+  { id: 'quiz',        label: 'Quiz Builder',       icon: '🧠' },
+  { id: 'studytimer',  label: 'Study Timer',        icon: '⏱' },
+  { id: 'goals',       label: 'Learning Goals',     icon: '🎯' },
+  { id: 'studynotes',  label: 'Study Notes',        icon: '📓' },
 ];
 
-const NAV_GROUPS = [
-  { label: 'Main', ids: ['hub'] },
-  { label: 'Training tools', ids: ['testtracker', 'attendance', 'cohort', 'document'] },
-  { label: 'Reporting', ids: ['kpi', 'printreport', 'email'] },
-  { label: 'Utilities', ids: ['datamanager'] },
+const NAV_GROUPS: { label: string; ids: View[] }[] = [
+  { label: "Quân's Works", ids: ['main'] },
+  { label: 'Training Hub', ids: ['hub', 'testtracker', 'attendance', 'cohort', 'document', 'kpi', 'printreport', 'email', 'datamanager'] },
   { label: 'Learning Hub', ids: ['learnhub', 'flashcard', 'quiz', 'studytimer', 'goals', 'studynotes'] },
 ];
 
 export default function App() {
-  const [view, setView] = useState<View>('hub');
+  const [view, setView] = useState<View>('main');
+
+  function navigate(v: string) { setView(v as View); }
 
   return (
     <div className="app">
       <aside className="sidebar">
-        <div className="sidebar-brand">
-          <span className="brand-icon">📊</span>
-          <span className="brand-name">Training Hub</span>
+        <div className="sidebar-brand" onClick={() => setView('main')} style={{ cursor: 'pointer' }}>
+          <span className="brand-icon">✦</span>
+          <span className="brand-name">Quân's Works</span>
         </div>
         <nav className="sidebar-nav">
           {NAV_GROUPS.map(group => (
@@ -75,7 +78,8 @@ export default function App() {
       </aside>
 
       <main className="main">
-        {view === 'hub'         && <HubView onNavigate={v => setView(v as View)} />}
+        {view === 'main'        && <MainHubView onNavigate={navigate} />}
+        {view === 'hub'         && <HubView onNavigate={navigate} />}
         {view === 'testtracker' && <TestTrackerView />}
         {view === 'attendance'  && <AttendanceGridView />}
         {view === 'kpi'         && <KPIView />}
@@ -84,7 +88,7 @@ export default function App() {
         {view === 'cohort'      && <CohortDashboardView />}
         {view === 'printreport' && <PrintReportView />}
         {view === 'document'    && <TrainingDocumentView />}
-        {view === 'learnhub'    && <LearningHubView onNavigate={v => setView(v as View)} />}
+        {view === 'learnhub'    && <LearningHubView onNavigate={navigate} />}
         {view === 'flashcard'   && <FlashcardView />}
         {view === 'quiz'        && <QuizView />}
         {view === 'studytimer'  && <StudyTimerView />}
