@@ -1075,3 +1075,66 @@ body { margin: 0; background: var(--bg); }
   .quiz-options-grid { grid-template-columns: 1fr; }
   .hub-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRAVEL HUB — main hub card
+═══════════════════════════════════════════════════════════════════════════ */
+.main-hub-card.main-teal { border-top: 4px solid var(--teal); }
+.main-hub-card.main-teal .main-hub-enter { color: var(--teal); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ITINERARY VIEW  (itin-)
+═══════════════════════════════════════════════════════════════════════════ */
+.itin-page { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+.itin-header { display: flex; align-items: center; gap: 16px; margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 2px solid var(--teal-bg); }
+.itin-flag { font-size: 2.5rem; flex: none; }
+.itin-title { font-size: 1.6rem; font-weight: 800; color: var(--tx); margin: 0 0 4px; }
+.itin-dates { font-size: 13px; color: var(--teal); font-weight: 600; }
+
+.itin-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.itin-tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--tx2); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; min-width: 72px; }
+.itin-tab:hover { border-color: var(--teal); color: var(--teal); }
+.itin-tab.active { border-color: var(--teal); background: var(--teal-bg); color: var(--teal-tx); }
+.itin-tab-emoji { font-size: 1.3rem; }
+.itin-tab-day { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.itin-tab-date { font-size: 10px; color: inherit; opacity: .8; }
+
+.itin-day-header { display: flex; align-items: center; gap: 14px; background: var(--teal-bg); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+.itin-day-emoji { font-size: 2rem; flex: none; }
+.itin-day-label { font-size: 11px; font-weight: 700; color: var(--teal-tx); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+.itin-day-title { font-size: 1.1rem; font-weight: 800; color: var(--tx); }
+
+.itin-timeline { display: flex; flex-direction: column; gap: 0; }
+.itin-item { display: flex; gap: 14px; }
+.itin-item-left { display: flex; flex-direction: column; align-items: center; flex: none; width: 36px; }
+.itin-item-icon { font-size: 1.25rem; flex: none; margin-top: 2px; }
+.itin-item-line { flex: 1; width: 2px; background: var(--border); margin: 6px 0; min-height: 16px; }
+.itin-item-body { flex: 1; padding-bottom: 1.1rem; }
+.itin-item-time { font-size: 11px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.itin-item-text { font-size: 13.5px; font-weight: 600; color: var(--tx); line-height: 1.5; }
+.itin-item-sub { margin: 6px 0 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 3px; }
+.itin-item-sub li { font-size: 12.5px; color: var(--tx2); line-height: 1.5; }
+
+/* Activity type accents */
+.act-flight .itin-item-icon::after  { content: ''; }
+.act-flight .itin-item-time  { color: var(--blue); }
+.act-food .itin-item-time    { color: var(--amber); }
+.act-optional .itin-item-text { color: var(--tx2); font-weight: 500; font-style: italic; }
+.act-optional .itin-item-time { color: var(--tx3); }
+.act-hotel .itin-item-time   { color: var(--purple); }
+
+.itin-nav { display: flex; align-items: center; justify-content: space-between; padding-top: 1.25rem; border-top: 1px solid var(--border); margin-top: .5rem; }
+.itin-nav-btn { padding: 8px 18px; border: 1.5px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--tx); font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
+.itin-nav-btn:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); }
+.itin-nav-btn:disabled { opacity: .35; cursor: default; }
+.itin-nav-count { font-size: 13px; color: var(--tx3); font-weight: 600; }
+
+@media (max-width: 540px) {
+  .itin-tabs { gap: 5px; }
+  .itin-tab { min-width: 60px; padding: 6px 10px; }
+  .itin-header { gap: 10px; }
+  .itin-title { font-size: 1.3rem; }
+}
+.itin-export-btn { padding: 8px 16px; background: var(--teal); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity .15s; flex: none; }
+.itin-export-btn:hover { opacity: .85; }

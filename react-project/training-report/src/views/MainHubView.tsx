@@ -34,6 +34,16 @@ const HUBS: HubCard[] = [
     color: 'main-purple',
     accentVar: 'var(--purple)',
   },
+  {
+    view: 'travelhub',
+    icon: '✈️',
+    name: 'Travel Hub',
+    subtitle: 'Trips & Itineraries',
+    desc: 'Plan and save travel adventures — day-by-day itineraries, activity schedules, food spots, and trip notes all in one place.',
+    tools: ['Trip Itinerary'],
+    color: 'main-teal',
+    accentVar: 'var(--teal)',
+  },
 ];
 
 export default function MainHubView({ onNavigate }: MainHubViewProps) {
@@ -42,7 +52,7 @@ export default function MainHubView({ onNavigate }: MainHubViewProps) {
       <div className="main-hub-hero">
         <div className="main-hub-avatar">Q</div>
         <h1 className="main-hub-title">Quân's Works</h1>
-        <p className="main-hub-sub">A personal workspace — training management tools and self-study resources, all in one place.</p>
+        <p className="main-hub-sub">A personal workspace — training management tools, self-study resources, and travel planning, all in one place.</p>
       </div>
 
       <div className="main-hub-grid">

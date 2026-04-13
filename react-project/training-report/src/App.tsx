@@ -15,12 +15,15 @@ import QuizView from './views/learning/QuizView';
 import StudyTimerView from './views/learning/StudyTimerView';
 import GoalTrackerView from './views/learning/GoalTrackerView';
 import StudyNotesView from './views/learning/StudyNotesView';
+import TravelHubView from './views/travel/TravelHubView';
+import TravelItineraryView from './views/travel/TravelItineraryView';
 import './App.css';
 
 type View =
   | 'main'
   | 'hub' | 'testtracker' | 'attendance' | 'kpi' | 'email' | 'datamanager' | 'cohort' | 'printreport' | 'document'
-  | 'learnhub' | 'flashcard' | 'quiz' | 'studytimer' | 'goals' | 'studynotes';
+  | 'learnhub' | 'flashcard' | 'quiz' | 'studytimer' | 'goals' | 'studynotes'
+  | 'travelhub' | 'itinerary';
 
 const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'main',        label: "Quân's Works",      icon: '🏠' },
@@ -39,12 +42,15 @@ const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'studytimer',  label: 'Study Timer',        icon: '⏱' },
   { id: 'goals',       label: 'Learning Goals',     icon: '🎯' },
   { id: 'studynotes',  label: 'Study Notes',        icon: '📓' },
+  { id: 'travelhub',   label: 'Overview',           icon: '✈️' },
+  { id: 'itinerary',   label: 'Trip Itinerary',     icon: '🗺️' },
 ];
 
 const NAV_GROUPS: { label: string; ids: View[] }[] = [
   { label: "Quân's Works", ids: ['main'] },
   { label: 'Training Hub', ids: ['hub', 'testtracker', 'attendance', 'cohort', 'document', 'kpi', 'printreport', 'email', 'datamanager'] },
   { label: 'Learning Hub', ids: ['learnhub', 'flashcard', 'quiz', 'studytimer', 'goals', 'studynotes'] },
+  { label: 'Travel Hub',   ids: ['travelhub', 'itinerary'] },
 ];
 
 export default function App() {
@@ -94,6 +100,8 @@ export default function App() {
         {view === 'studytimer'  && <StudyTimerView />}
         {view === 'goals'       && <GoalTrackerView />}
         {view === 'studynotes'  && <StudyNotesView />}
+        {view === 'travelhub'   && <TravelHubView onNavigate={navigate} />}
+        {view === 'itinerary'   && <TravelItineraryView />}
       </main>
     </div>
   );
