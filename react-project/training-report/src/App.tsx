@@ -18,16 +18,22 @@ import StudyNotesView from './views/learning/StudyNotesView';
 import TravelHubView from './views/travel/TravelHubView';
 import TravelItineraryView from './views/travel/TravelItineraryView';
 import TripTemplateView from './views/travel/TripTemplateView';
+import FinanceHubView from './views/finance/FinanceHubView';
+import ExpenseTrackerView from './views/finance/ExpenseTrackerView';
+import JournalHubView from './views/journal/JournalHubView';
+import DailyJournalView from './views/journal/DailyJournalView';
 import './App.css';
 
 type View =
   | 'main'
   | 'hub' | 'testtracker' | 'attendance' | 'kpi' | 'email' | 'datamanager' | 'cohort' | 'printreport' | 'document'
   | 'learnhub' | 'flashcard' | 'quiz' | 'studytimer' | 'goals' | 'studynotes'
-  | 'travelhub' | 'itinerary' | 'triptemplate';
+  | 'travelhub' | 'itinerary' | 'triptemplate'
+  | 'financehub' | 'expenses'
+  | 'journalhub' | 'dailyjournal';
 
 const NAV: { id: View; label: string; icon: string }[] = [
-  { id: 'main',         label: "Quân's Works",    icon: '🏠' },
+  { id: 'main',         label: "Quân's Works",    icon: '✦' },
   { id: 'hub',          label: 'Overview',         icon: '📋' },
   { id: 'testtracker',  label: 'Test Tracker',     icon: '📝' },
   { id: 'attendance',   label: 'Attendance',       icon: '📅' },
@@ -46,6 +52,10 @@ const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'travelhub',    label: 'Overview',         icon: '✈️' },
   { id: 'itinerary',    label: 'Taiwan 2026',      icon: '🇹🇼' },
   { id: 'triptemplate', label: 'Trip Templates',   icon: '📋' },
+  { id: 'financehub',   label: 'Overview',         icon: '💰' },
+  { id: 'expenses',     label: 'Expense Tracker',  icon: '💸' },
+  { id: 'journalhub',   label: 'Overview',         icon: '📔' },
+  { id: 'dailyjournal', label: 'Daily Journal',    icon: '✍️' },
 ];
 
 const NAV_GROUPS: { label: string; ids: View[] }[] = [
@@ -53,6 +63,8 @@ const NAV_GROUPS: { label: string; ids: View[] }[] = [
   { label: 'Training Hub', ids: ['hub', 'testtracker', 'attendance', 'cohort', 'document', 'kpi', 'printreport', 'email', 'datamanager'] },
   { label: 'Learning Hub', ids: ['learnhub', 'flashcard', 'quiz', 'studytimer', 'goals', 'studynotes'] },
   { label: 'Travel Hub',   ids: ['travelhub', 'itinerary', 'triptemplate'] },
+  { label: 'Finance Hub',  ids: ['financehub', 'expenses'] },
+  { label: 'Journal Hub',  ids: ['journalhub', 'dailyjournal'] },
 ];
 
 export default function App() {
@@ -60,8 +72,10 @@ export default function App() {
 
   function navigate(v: string) { setView(v as View); }
 
+  const isLanding = view === 'main';
+
   return (
-    <div className="app">
+    <div className={`app ${isLanding ? 'app--landing' : ''}`}>
       <aside className="sidebar">
         <div className="sidebar-brand" onClick={() => setView('main')} style={{ cursor: 'pointer' }}>
           <span className="brand-icon">✦</span>
@@ -105,6 +119,10 @@ export default function App() {
         {view === 'travelhub'    && <TravelHubView onNavigate={navigate} />}
         {view === 'itinerary'    && <TravelItineraryView />}
         {view === 'triptemplate' && <TripTemplateView />}
+        {view === 'financehub'   && <FinanceHubView onNavigate={navigate} />}
+        {view === 'expenses'     && <ExpenseTrackerView />}
+        {view === 'journalhub'   && <JournalHubView onNavigate={navigate} />}
+        {view === 'dailyjournal' && <DailyJournalView />}
       </main>
     </div>
   );

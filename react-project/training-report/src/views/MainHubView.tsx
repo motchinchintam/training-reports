@@ -9,8 +9,7 @@ interface HubCard {
   subtitle: string;
   desc: string;
   tools: string[];
-  color: string;
-  accentVar: string;
+  accent: string;
 }
 
 const HUBS: HubCard[] = [
@@ -19,69 +18,117 @@ const HUBS: HubCard[] = [
     icon: '📊',
     name: 'Training Hub',
     subtitle: 'Reporting & Tracking',
-    desc: 'Tools for managing training programs — track attendance, test scores, KPIs, cohort pipeline, and generate print-ready reports.',
-    tools: ['Test Tracker', 'Attendance', 'Cohort Dashboard', 'KPI Tracker', 'Print Report', 'Email Export', 'Data Manager', 'Training Doc'],
-    color: 'main-blue',
-    accentVar: 'var(--blue)',
+    desc: 'Manage training programs end-to-end — attendance, test scores, KPIs, cohort pipeline, and print-ready reports.',
+    tools: ['Test Tracker', 'Attendance', 'KPI Tracker', 'Cohort Dashboard', 'Print Report', 'Email Export'],
+    accent: '#4A9EFF',
   },
   {
     view: 'learnhub',
     icon: '🎓',
     name: 'Learning Hub',
-    subtitle: 'Tester Skills · Languages',
-    desc: 'Personal study tools for SQL, TypeScript, English, and Chinese — flashcards, quizzes, Pomodoro timer, goals, and notes.',
-    tools: ['Flashcard Decks', 'Quiz Builder', 'Study Timer', 'Learning Goals', 'Study Notes'],
-    color: 'main-purple',
-    accentVar: 'var(--purple)',
+    subtitle: 'Skills · Languages',
+    desc: 'Study SQL, TypeScript, English, and Chinese with flashcards, quizzes, Pomodoro timer, goals, and notes.',
+    tools: ['Flashcards', 'Quiz Builder', 'Study Timer', 'Learning Goals', 'Study Notes'],
+    accent: '#A78BFA',
   },
   {
     view: 'travelhub',
     icon: '✈️',
     name: 'Travel Hub',
     subtitle: 'Trips & Itineraries',
-    desc: 'Plan and save travel adventures — day-by-day itineraries, activity schedules, food spots, and trip notes all in one place.',
-    tools: ['Trip Itinerary'],
-    color: 'main-teal',
-    accentVar: 'var(--teal)',
+    desc: 'Save day-by-day itineraries, activity schedules, and trip notes. Export to Apple or Google Calendar.',
+    tools: ['Taiwan 2026', 'Trip Templates'],
+    accent: '#2DD4BF',
+  },
+  {
+    view: 'financehub',
+    icon: '💰',
+    name: 'Finance Hub',
+    subtitle: 'Budget & Expenses',
+    desc: 'Track daily expenses, set trip budgets, and monitor savings goals — keep your finances clear and under control.',
+    tools: ['Expense Tracker', 'Trip Budget', 'Savings Goals'],
+    accent: '#FBBF24',
+  },
+  {
+    view: 'journalhub',
+    icon: '📔',
+    name: 'Journal Hub',
+    subtitle: 'Daily Log · Reflections',
+    desc: 'Write daily journal entries, track your mood, and do weekly reviews — a quiet space for personal growth.',
+    tools: ['Daily Journal', 'Mood Tracker', 'Weekly Review'],
+    accent: '#F87171',
   },
 ];
 
 export default function MainHubView({ onNavigate }: MainHubViewProps) {
   return (
-    <div className="main-hub-page">
-      <div className="main-hub-hero">
-        <div className="main-hub-avatar">Q</div>
-        <h1 className="main-hub-title">Quân's Works</h1>
-        <p className="main-hub-sub">A personal workspace — training management tools, self-study resources, and travel planning, all in one place.</p>
+    <div className="lp-page">
+
+      {/* ── Hero ── */}
+      <div className="lp-hero">
+        <div className="lp-available">
+          <span className="lp-dot" />
+          Software QA Engineer · Language Learner · Solo Traveler
+        </div>
+        <h1 className="lp-h1">
+          Quân's<br />
+          <span className="lp-h1-accent">Works</span>
+        </h1>
+        <p className="lp-sub">
+          A personal workspace built from scratch — tools for work, study, and life, all saved in your browser.
+        </p>
+        <button className="lp-cta" onClick={() => onNavigate('hub')}>
+          Explore Tools <span className="lp-cta-arrow">→</span>
+        </button>
       </div>
 
-      <div className="main-hub-grid">
-        {HUBS.map(hub => (
+      {/* ── Divider ── */}
+      <div className="lp-divider">
+        <span className="lp-divider-label">// HUBS</span>
+        <div className="lp-divider-line" />
+        <span className="lp-divider-count">{HUBS.length} workspaces</span>
+      </div>
+
+      {/* ── Hub Cards ── */}
+      <div className="lp-hubs">
+        {HUBS.map((hub, i) => (
           <div
             key={hub.view}
-            className={`main-hub-card ${hub.color}`}
+            className="lp-hub-card"
+            style={{ '--hub-accent': hub.accent } as React.CSSProperties}
             onClick={() => onNavigate(hub.view)}
-            role="button" tabIndex={0}
+            role="button"
+            tabIndex={0}
             onKeyDown={e => e.key === 'Enter' && onNavigate(hub.view)}
           >
-            <div className="main-hub-card-header">
-              <span className="main-hub-card-icon">{hub.icon}</span>
-              <div>
-                <div className="main-hub-card-name">{hub.name}</div>
-                <div className="main-hub-card-subtitle">{hub.subtitle}</div>
+            <div className="lp-hub-num">0{i + 1}</div>
+            <div className="lp-hub-body">
+              <div className="lp-hub-top">
+                <span className="lp-hub-icon">{hub.icon}</span>
+                <div>
+                  <div className="lp-hub-name">{hub.name}</div>
+                  <div className="lp-hub-subtitle">{hub.subtitle}</div>
+                </div>
+              </div>
+              <p className="lp-hub-desc">{hub.desc}</p>
+              <div className="lp-hub-tools">
+                {hub.tools.map(t => <span key={t} className="lp-hub-chip">{t}</span>)}
               </div>
             </div>
-            <p className="main-hub-card-desc">{hub.desc}</p>
-            <div className="main-hub-tools">
-              {hub.tools.map(t => <span key={t} className="main-hub-tool-chip">{t}</span>)}
+            <div className="lp-hub-enter">
+              Enter <span>→</span>
             </div>
-            <div className="main-hub-enter">Enter hub →</div>
           </div>
         ))}
       </div>
 
-      <div className="main-hub-footer">
-        Quân's Works · All data saved locally in your browser
+      {/* ── Footer ── */}
+      <div className="lp-footer">
+        <span>Quân's Works</span>
+        <span className="lp-footer-dot">·</span>
+        <span>All data saved locally in your browser</span>
+        <span className="lp-footer-dot">·</span>
+        <span>Built with React + TypeScript</span>
       </div>
     </div>
   );
