@@ -288,6 +288,16 @@ function AppInner() {
 
       {/* ── Page Content ────────────────────────────────────────────────── */}
       <main className={isPortfolio ? 'pt-main' : 'main-content'}>
+
+        {/* Back-to-home bar — shown on every portfolio page except home */}
+        {isPortfolio && view !== 'home' && (
+          <div className="pt-back-bar">
+            <button className="pt-back-home-btn" onClick={() => navigate('home')}>
+              ← {s.nav.home}
+            </button>
+          </div>
+        )}
+
         {view === 'home'        && <HomeView     onNavigate={navigate} />}
         {view === 'work'        && <WorkView     onNavigate={navigate} />}
         {view === 'about'       && <AboutView    onNavigate={navigate} />}

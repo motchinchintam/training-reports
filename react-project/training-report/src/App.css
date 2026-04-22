@@ -2278,6 +2278,24 @@ body { margin: 0; background: var(--bg); }
 .pt-main { flex: 1; overflow-y: auto; background: #fff; }
 .pt-page { background: #fff; }
 
+/* ── Back-to-home bar ──────────────────────────────────────────────── */
+.pt-back-bar {
+  padding: .6rem 2.5rem;
+  border-bottom: 1px solid var(--pt-border);
+  background: var(--pt-bg2);
+}
+.pt-back-home-btn {
+  font-size: .8rem; font-weight: 700;
+  color: var(--pt-text2); background: none; border: none;
+  cursor: pointer; font-family: inherit;
+  padding: .25rem .5rem; border-radius: 6px;
+  transition: color .15s, background .15s;
+}
+.pt-back-home-btn:hover {
+  color: var(--pt-accent);
+  background: rgba(27,67,50,.07);
+}
+
 /* ── Common atoms ──────────────────────────────────────────────────── */
 .pt-eyebrow {
   display: block;
