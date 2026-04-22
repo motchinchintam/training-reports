@@ -31,7 +31,6 @@ const JOURNAL_TOOLS: ToolCard[] = [
     badgeColor: 'amber',
     desc: 'Log your daily mood and energy levels. Spot patterns over time and understand what affects you.',
     color: 'amber',
-    soon: true,
   },
   {
     view: 'weeklyreview',
@@ -41,7 +40,6 @@ const JOURNAL_TOOLS: ToolCard[] = [
     badgeColor: 'blue',
     desc: 'End each week with a structured review — wins, struggles, lessons, and intentions for next week.',
     color: 'blue',
-    soon: true,
   },
 ];
 

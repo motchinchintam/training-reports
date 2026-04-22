@@ -31,7 +31,6 @@ const FINANCE_TOOLS: ToolCard[] = [
     badgeColor: 'teal',
     desc: 'Set a budget for each trip, log spending per day, and track how much you have left.',
     color: 'teal',
-    soon: true,
   },
   {
     view: 'savings',
@@ -41,7 +40,6 @@ const FINANCE_TOOLS: ToolCard[] = [
     badgeColor: 'green',
     desc: 'Define savings targets — next trip, gadget, emergency fund — and track your progress over time.',
     color: 'green',
-    soon: true,
   },
 ];
 
