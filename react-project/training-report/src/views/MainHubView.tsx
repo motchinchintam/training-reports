@@ -90,6 +90,7 @@ export default function MainHubView({ onNavigate }: MainHubViewProps) {
           <p className="lp-role lp-anim" style={{ '--d': '260ms' } as React.CSSProperties}>
             HR & Sales Training HRD · Language Learner · Traveler
           </p>
+          
 
           {/* Motto */}
           <p className="lp-quote lp-anim" style={{ '--d': '360ms' } as React.CSSProperties}>{MOTTO}</p>
