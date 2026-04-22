@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LangProvider, useLang, type Lang } from './i18n/index';
 
 // Portfolio pages
 import HomeView     from './views/portfolio/HomeView';
@@ -109,20 +110,14 @@ const HUB_GROUPS: HubGroup[] = [
 ];
 
 const PORTFOLIO_VIEWS = new Set<View>(['home', 'work', 'about', 'insights', 'contact']);
-const PORTFOLIO_NAV   = [
-  { id: 'work'     as const, label: 'Work'     },
-  { id: 'about'    as const, label: 'About'    },
-  { id: 'insights' as const, label: 'Insights' },
-  { id: 'contact'  as const, label: 'Contact'  },
-];
 
 function getActiveHub(view: View): HubGroup | null {
   if (PORTFOLIO_VIEWS.has(view) || view === 'apps') return null;
   return HUB_GROUPS.find(g => g.tools.some(t => t.id === view)) ?? null;
 }
 
-
-export default function App() {
+function AppInner() {
+  const { lang, setLang, s } = useLang();
   const [view, setView] = useState<View>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -135,6 +130,19 @@ export default function App() {
   const isPortfolio = PORTFOLIO_VIEWS.has(view);
   const isApps      = view === 'apps';
   const activeHub   = getActiveHub(view);
+
+  const LANG_OPTIONS: { id: Lang; label: string }[] = [
+    { id: 'en', label: 'EN' },
+    { id: 'vi', label: 'VI' },
+    { id: 'zh', label: '中' },
+  ];
+
+  const NAV_ITEMS = [
+    { id: 'work'     as const, label: s.nav.work     },
+    { id: 'about'    as const, label: s.nav.about    },
+    { id: 'insights' as const, label: s.nav.insights },
+    { id: 'contact'  as const, label: s.nav.contact  },
+  ];
 
   return (
     <div className={`app-v2${isApps ? ' app--landing' : ''}`}>
@@ -151,7 +159,7 @@ export default function App() {
 
           {/* Portfolio nav links */}
           <nav className="topnav-hubs">
-            {PORTFOLIO_NAV.map(({ id, label }) => (
+            {NAV_ITEMS.map(({ id, label }) => (
               <button
                 key={id}
                 className={`topnav-hub topnav-plink${view === id ? ' plink-active' : ''}`}
@@ -162,13 +170,26 @@ export default function App() {
             ))}
           </nav>
 
+          {/* Language switcher */}
+          <div className="topnav-lang-switcher">
+            {LANG_OPTIONS.map(o => (
+              <button
+                key={o.id}
+                className={`topnav-lang-btn${lang === o.id ? ' active' : ''}`}
+                onClick={() => setLang(o.id)}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+
           {/* Apps access button */}
           <button
             className={`topnav-apps-btn${!isPortfolio ? ' active' : ''}`}
             onClick={() => navigate('apps')}
             title="Personal productivity apps"
           >
-            Apps ⊞
+            {s.nav.apps} ⊞
           </button>
 
           {/* Mobile hamburger */}
@@ -184,11 +205,24 @@ export default function App() {
         {/* Mobile dropdown */}
         {mobileMenuOpen && (
           <div className="topnav-mobile-menu">
-            <button className="mobile-menu-item" onClick={() => navigate('home')}>🏠 Home</button>
-            {PORTFOLIO_NAV.map(({ id, label }) => (
+            <button className="mobile-menu-item" onClick={() => navigate('home')}>🏠 {s.nav.home}</button>
+            {NAV_ITEMS.map(({ id, label }) => (
               <button key={id} className="mobile-menu-item" onClick={() => navigate(id)}>{label}</button>
             ))}
-            <div className="mobile-menu-section-label">Apps</div>
+            {/* Mobile lang switcher */}
+            <div className="mobile-menu-section-label">Language</div>
+            <div className="mobile-lang-row">
+              {LANG_OPTIONS.map(o => (
+                <button
+                  key={o.id}
+                  className={`topnav-lang-btn${lang === o.id ? ' active' : ''}`}
+                  onClick={() => setLang(o.id)}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            <div className="mobile-menu-section-label">{s.nav.apps}</div>
             {HUB_GROUPS.map(g => (
               <div key={g.id} className="mobile-menu-group">
                 <button
@@ -268,5 +302,13 @@ export default function App() {
         {view === 'weeklyreview' && <WeeklyReviewView />}
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LangProvider>
+      <AppInner />
+    </LangProvider>
   );
 }

@@ -1,41 +1,23 @@
-import { PROJECTS, STRENGTHS, INSIGHTS } from '../../data/portfolio';
+import { PROJECTS, INSIGHTS } from '../../data/portfolio';
+import { useLang } from '../../i18n/index';
 
 interface HomeViewProps { onNavigate: (v: string) => void; }
 
-const FEATURED = PROJECTS.slice(0, 3);
-
-const SOCIAL_POSTS = [
-  {
-    id: 1,
-    platform: 'instagram',
-    image: '',
-    caption: 'Great session with the team today — wrapped up a full onboarding module for new sales reps. Watching people click with a concept they struggled with an hour ago never gets old. 🙌',
-    date: 'Apr 2026',
-    likes: 47,
-    link: 'https://www.instagram.com/motchinchintam/',
-  },
-  {
-    id: 2,
-    platform: 'facebook',
-    image: '',
-    caption: 'Finished reading "The Coaching Habit" — some genuinely practical frameworks in there for anyone who leads or trains people. Highly recommend if you work in L&D or HR.',
-    date: 'Mar 2026',
-    likes: 62,
-    link: 'https://www.facebook.com/motchinchintam',
-  },
-  {
-    id: 3,
-    platform: 'instagram',
-    image: '',
-    caption: 'Sometimes the best training tool is a conversation. Asked 3 simple questions in today\'s coaching session and the rep figured out the answer themselves. That\'s the goal every time.',
-    date: 'Mar 2026',
-    likes: 38,
-    link: 'https://www.instagram.com/motchinchintam/',
-  },
+const SOCIAL_STATIC = [
+  { platform: 'instagram', image: '', link: 'https://www.instagram.com/motchinchintam/', likes: 47 },
+  { platform: 'facebook',  image: '', link: 'https://www.facebook.com/motchinchintam',  likes: 62 },
+  { platform: 'instagram', image: '', link: 'https://www.instagram.com/motchinchintam/', likes: 38 },
 ];
+
+const SOCIAL_DATES = ['Apr 2026', 'Mar 2026', 'Mar 2026'];
 
 export default function HomeView({ onNavigate }: HomeViewProps) {
   const base = import.meta.env.BASE_URL;
+  const { s } = useLang();
+
+  const projects  = PROJECTS.slice(0, 3).map((p, i) => ({ ...p, ...s.data.projects[i] }));
+  const insights  = INSIGHTS.map((ins, i) => ({ ...ins, ...s.data.insights[i] }));
+  const strengths = s.data.strengths;
 
   return (
     <div className="pt-page">
@@ -43,18 +25,13 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="pt-hero">
         <div className="pt-hero-text">
-          <p className="pt-hero-greeting">Hi, I'm Quân 👋</p>
-          <span className="pt-eyebrow">HR &amp; Sales Training · HRD</span>
-          <h1 className="pt-hero-headline">
-            I help teams grow through systems, training, and structured execution.
-          </h1>
-          <p className="pt-hero-sub">
-            Sales &amp; HR Development professional with 6+ years building onboarding programs,
-            reducing churn, and scaling teams across SaaS, retail, and duty-free environments.
-          </p>
+          <p className="pt-hero-greeting">{s.home.greeting}</p>
+          <span className="pt-eyebrow">{s.home.eyebrow}</span>
+          <h1 className="pt-hero-headline">{s.home.heroHeadline}</h1>
+          <p className="pt-hero-sub">{s.home.heroSub}</p>
           <div className="pt-hero-ctas">
-            <button className="pt-btn-primary"   onClick={() => onNavigate('work')}>View Work</button>
-            <button className="pt-btn-secondary" onClick={() => onNavigate('contact')}>Contact</button>
+            <button className="pt-btn-primary"   onClick={() => onNavigate('work')}>{s.common.viewWork}</button>
+            <button className="pt-btn-secondary" onClick={() => onNavigate('contact')}>{s.common.contact}</button>
           </div>
         </div>
         <div className="pt-hero-visual">
@@ -71,11 +48,11 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
       <section className="pt-section pt-section--alt">
         <div className="pt-section-inner">
           <div className="pt-section-header">
-            <h2 className="pt-section-title">Selected Work</h2>
-            <button className="pt-link-btn" onClick={() => onNavigate('work')}>See all →</button>
+            <h2 className="pt-section-title">{s.home.selectedWork}</h2>
+            <button className="pt-link-btn" onClick={() => onNavigate('work')}>{s.common.seeAll}</button>
           </div>
           <div className="pt-projects-grid">
-            {FEATURED.map(p => (
+            {projects.map(p => (
               <div key={p.id} className="pt-project-card" onClick={() => onNavigate('work')}>
                 <div className="pt-project-tags">
                   {p.tags.map(t => <span key={t} className="pt-tag">{t}</span>)}
@@ -93,24 +70,17 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
       <section className="pt-section">
         <div className="pt-section-inner pt-about-snap">
           <div className="pt-about-snap-text">
-            <span className="pt-eyebrow">About</span>
-            <h2 className="pt-section-title">Mindset over title.</h2>
-            <p className="pt-about-snap-body">
-              I care more about building systems that last than hitting short-term numbers.
-              Whether it's designing a training program from scratch, cutting churn through
-              better client engagement, or scaling a team across multiple cities — I approach
-              every problem by asking what the root cause is, not just what the symptom looks like.
-            </p>
-            {/* Inline stats */}
+            <span className="pt-eyebrow">{s.home.aboutEyebrow}</span>
+            <h2 className="pt-section-title">{s.home.aboutHeadline}</h2>
+            <p className="pt-about-snap-body">{s.home.aboutBody}</p>
             <div className="pt-snap-stats">
-              <div className="pt-snap-stat"><span className="pt-abs-num">6+</span><span className="pt-abs-label">Yrs Exp</span></div>
-              <div className="pt-snap-stat"><span className="pt-abs-num">100+</span><span className="pt-abs-label">Trained</span></div>
-              <div className="pt-snap-stat"><span className="pt-abs-num">4K+</span><span className="pt-abs-label">Accounts</span></div>
-              <div className="pt-snap-stat"><span className="pt-abs-num">85%+</span><span className="pt-abs-label">Pass Rate</span></div>
+              <div className="pt-snap-stat"><span className="pt-abs-num">6+</span><span className="pt-abs-label">{s.home.statsYrs}</span></div>
+              <div className="pt-snap-stat"><span className="pt-abs-num">100+</span><span className="pt-abs-label">{s.home.statsTrained}</span></div>
+              <div className="pt-snap-stat"><span className="pt-abs-num">4K+</span><span className="pt-abs-label">{s.home.statsAccounts}</span></div>
+              <div className="pt-snap-stat"><span className="pt-abs-num">85%+</span><span className="pt-abs-label">{s.home.statsPass}</span></div>
             </div>
-            <button className="pt-link-btn" onClick={() => onNavigate('about')}>Full About →</button>
+            <button className="pt-link-btn" onClick={() => onNavigate('about')}>{s.home.fullAbout}</button>
           </div>
-          {/* 2-photo collage */}
           <div className="pt-about-snap-visual">
             <div className="pt-photo-collage">
               <img src={`${base}photo1.jpg`} alt="" className="pt-collage-main"   />
@@ -123,14 +93,14 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
       {/* ── Core Strengths ────────────────────────────────────────────────── */}
       <section className="pt-section pt-section--alt">
         <div className="pt-section-inner">
-          <h2 className="pt-section-title">Core Strengths</h2>
-          <p className="pt-section-sub">What I do best — and how I approach every engagement.</p>
+          <h2 className="pt-section-title">{s.home.coreStrengths}</h2>
+          <p className="pt-section-sub">{s.home.strengthsSub}</p>
           <div className="pt-strengths-grid">
-            {STRENGTHS.map((s, i) => (
-              <div key={s.title} className="pt-strength-card">
+            {strengths.map((st, i) => (
+              <div key={st.title} className="pt-strength-card">
                 <span className="pt-strength-num">0{i + 1}</span>
-                <h3 className="pt-strength-title">{s.title}</h3>
-                <p className="pt-strength-desc">{s.desc}</p>
+                <h3 className="pt-strength-title">{st.title}</h3>
+                <p className="pt-strength-desc">{st.desc}</p>
               </div>
             ))}
           </div>
@@ -150,11 +120,11 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
       <section className="pt-section">
         <div className="pt-section-inner">
           <div className="pt-section-header">
-            <h2 className="pt-section-title">Insights</h2>
-            <button className="pt-link-btn" onClick={() => onNavigate('insights')}>See all →</button>
+            <h2 className="pt-section-title">{s.insights.pageTitle}</h2>
+            <button className="pt-link-btn" onClick={() => onNavigate('insights')}>{s.common.seeAll}</button>
           </div>
           <div className="pt-insights-grid">
-            {INSIGHTS.map(ins => (
+            {insights.map(ins => (
               <div key={ins.id} className="pt-insight-card" onClick={() => onNavigate('insights')}>
                 <div className="pt-insight-meta">
                   <span className="pt-tag">{ins.tag}</span>
@@ -172,38 +142,38 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
       <section className="pt-section pt-section--alt">
         <div className="pt-section-inner">
           <div className="pt-section-header">
-            <h2 className="pt-section-title">From My Feed</h2>
+            <h2 className="pt-section-title">{s.home.fromMyFeed}</h2>
             <div className="pt-social-links">
               <a href="https://www.instagram.com/motchinchintam/" target="_blank" rel="noopener noreferrer" className="pt-social-pill pt-social-pill--ig">Instagram ↗</a>
               <a href="https://www.facebook.com/motchinchintam" target="_blank" rel="noopener noreferrer" className="pt-social-pill pt-social-pill--fb">Facebook ↗</a>
             </div>
           </div>
           <div className="pt-social-grid">
-            {SOCIAL_POSTS.map(post => (
-              <a key={post.id} href={post.link} target="_blank" rel="noopener noreferrer" className="pt-social-card">
+            {SOCIAL_STATIC.map((post, i) => (
+              <a key={i} href={post.link} target="_blank" rel="noopener noreferrer" className="pt-social-card">
                 <div className="pt-social-card-top">
                   <span className={`pt-social-badge pt-social-badge--${post.platform}`}>
                     {post.platform === 'instagram' ? '📸 Instagram' : '📘 Facebook'}
                   </span>
-                  <span className="pt-social-date">{post.date}</span>
+                  <span className="pt-social-date">{SOCIAL_DATES[i]}</span>
                 </div>
-                <p className="pt-social-caption">{post.caption}</p>
+                <p className="pt-social-caption">{s.home.socialCaptions[i]}</p>
                 <div className="pt-social-card-footer">
                   <span className="pt-social-likes">♥ {post.likes}</span>
-                  <span className="pt-social-cta">View post →</span>
+                  <span className="pt-social-cta">{s.common.read}</span>
                 </div>
               </a>
             ))}
           </div>
-          <p className="pt-social-note">* Posts are curated manually. Follow me for live updates.</p>
+          <p className="pt-social-note">{s.home.socialNote}</p>
         </div>
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <section className="pt-cta-section">
         <div className="pt-section-inner pt-cta-inner">
-          <p className="pt-cta-line">Interested in working together?</p>
-          <button className="pt-btn-primary" onClick={() => onNavigate('contact')}>Contact</button>
+          <p className="pt-cta-line">{s.common.interestedWorking}</p>
+          <button className="pt-btn-primary" onClick={() => onNavigate('contact')}>{s.common.contact}</button>
         </div>
       </section>
 
@@ -212,12 +182,12 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
         <div className="pt-footer-inner">
           <div className="pt-footer-left">
             <span className="pt-footer-name">Quân</span>
-            <span className="pt-footer-tag">HR &amp; Sales Training · HRD</span>
+            <span className="pt-footer-tag">{s.common.footerTag}</span>
           </div>
           <div className="pt-footer-links">
             {(['work', 'about', 'insights', 'contact'] as const).map(p => (
               <button key={p} className="pt-footer-link" onClick={() => onNavigate(p)}>
-                {p.charAt(0).toUpperCase() + p.slice(1)}
+                {s.nav[p]}
               </button>
             ))}
           </div>
@@ -226,7 +196,7 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
             <a href="https://www.linkedin.com/in/motchinchintam/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
           </div>
         </div>
-        <div className="pt-footer-copy">© 2026 Nguyen Thanh Quan</div>
+        <div className="pt-footer-copy">{s.common.footerCopy}</div>
       </footer>
 
     </div>

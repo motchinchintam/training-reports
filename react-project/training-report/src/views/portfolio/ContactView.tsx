@@ -1,24 +1,24 @@
+import { useLang } from '../../i18n/index';
+
 interface ContactViewProps { onNavigate: (v: string) => void; }
 
 const CONTACTS = [
-  { label: 'Email',     value: 'motchinchiintam@gmail.com',              href: 'mailto:motchinchiintam@gmail.com',                   icon: '✉' },
-  { label: 'LinkedIn',  value: 'linkedin.com/in/motchinchintam',         href: 'https://www.linkedin.com/in/motchinchintam/',        icon: '💼' },
-  { label: 'Facebook',  value: 'fb.com/availableeeeee',                  href: 'https://www.facebook.com/availableeeeee/',           icon: 'f' },
-  { label: 'Instagram', value: '@motchinchintam',                        href: 'https://www.instagram.com/motchinchintam',           icon: '◎' },
-  { label: 'Zalo',      value: '0916 366 443',                           href: 'https://zalo.me/0916366443',                        icon: 'Z' },
+  { label: 'Email',     value: 'motchinchiintam@gmail.com',       href: 'mailto:motchinchiintam@gmail.com',            icon: '✉' },
+  { label: 'LinkedIn',  value: 'linkedin.com/in/motchinchintam',  href: 'https://www.linkedin.com/in/motchinchintam/', icon: '💼' },
+  { label: 'Facebook',  value: 'fb.com/availableeeeee',           href: 'https://www.facebook.com/availableeeeee/',    icon: 'f' },
+  { label: 'Instagram', value: '@motchinchintam',                 href: 'https://www.instagram.com/motchinchintam',    icon: '◎' },
+  { label: 'Zalo',      value: '0916 366 443',                    href: 'https://zalo.me/0916366443',                  icon: 'Z' },
 ];
 
 export default function ContactView({ onNavigate }: ContactViewProps) {
+  const { s } = useLang();
   return (
     <div className="pt-page">
 
       <div className="pt-page-hero">
         <div className="pt-section-inner">
-          <h1 className="pt-page-title">Contact</h1>
-          <p className="pt-page-sub">
-            Open to collaboration, conversations, and new opportunities.
-            Reach out through any of the channels below.
-          </p>
+          <h1 className="pt-page-title">{s.contact.pageTitle}</h1>
+          <p className="pt-page-sub">{s.contact.pageSub}</p>
         </div>
       </div>
 
@@ -36,10 +36,7 @@ export default function ContactView({ onNavigate }: ContactViewProps) {
               </a>
             ))}
           </div>
-
-          <div className="pt-contact-note">
-            Based in Ho Chi Minh City, Vietnam · Available for remote collaboration
-          </div>
+          <div className="pt-contact-note">{s.contact.note}</div>
         </div>
       </section>
 
@@ -47,12 +44,12 @@ export default function ContactView({ onNavigate }: ContactViewProps) {
         <div className="pt-footer-inner">
           <div className="pt-footer-left">
             <span className="pt-footer-name">Quân</span>
-            <span className="pt-footer-tag">HR &amp; Sales Training · HRD</span>
+            <span className="pt-footer-tag">{s.common.footerTag}</span>
           </div>
           <div className="pt-footer-links">
             {(['work', 'about', 'insights', 'contact'] as const).map(p => (
               <button key={p} className="pt-footer-link" onClick={() => onNavigate(p)}>
-                {p.charAt(0).toUpperCase() + p.slice(1)}
+                {s.nav[p]}
               </button>
             ))}
           </div>
@@ -60,7 +57,7 @@ export default function ContactView({ onNavigate }: ContactViewProps) {
             <a href="mailto:motchinchiintam@gmail.com">motchinchiintam@gmail.com</a>
           </div>
         </div>
-        <div className="pt-footer-copy">© 2026 Nguyen Thanh Quan</div>
+        <div className="pt-footer-copy">{s.common.footerCopy}</div>
       </footer>
 
     </div>
