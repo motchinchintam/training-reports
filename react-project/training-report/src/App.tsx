@@ -121,6 +121,7 @@ function getActiveHub(view: View): HubGroup | null {
   return HUB_GROUPS.find(g => g.tools.some(t => t.id === view)) ?? null;
 }
 
+
 export default function App() {
   const [view, setView] = useState<View>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
