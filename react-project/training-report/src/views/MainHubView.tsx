@@ -61,8 +61,10 @@ const HUBS: HubCard[] = [
 ];
 
 export default function MainHubView({ onNavigate }: MainHubViewProps) {
+  const bgUrl = `${import.meta.env.BASE_URL}sloth-bg.jpg`;
   return (
-    <div className="lp-page">
+    <div className="lp-page" style={{ backgroundImage: `url(${bgUrl})` }}>
+    <div className="lp-inner">
 
       {/* ── Hero ── */}
       <div className="lp-hero">
@@ -130,6 +132,7 @@ export default function MainHubView({ onNavigate }: MainHubViewProps) {
         <span className="lp-footer-dot">·</span>
         <span>Built with React + TypeScript</span>
       </div>
+    </div>
     </div>
   );
 }
