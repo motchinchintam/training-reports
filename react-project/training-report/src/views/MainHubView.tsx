@@ -13,25 +13,49 @@ const HUBS = [
 ];
 
 const CURRENTLY = [
-  { icon: '🗣', label: 'Learning Japanese' },
-  { icon: '✈️', label: 'Planning a trip to Da Nang' },
+  { icon: '🗣', label: 'Learning Mandarin & English' },
+  { icon: '✈️', label: 'Planning to travel abroad' },
   { icon: '📖', label: 'Reading The Silence of the Lambs' },
 ];
 
 const STATS = [
-  { num: '5+',  label: 'Countries'  },
-  { num: '12+', label: 'Books Read' },
-  { num: '3',   label: 'Languages'  },
-  { num: '2+',  label: 'Yrs in QA'  },
+  { num: '6+',  label: 'Yrs Exp'      },
+  { num: '100+', label: 'Staff Trained' },
+  { num: '4K+', label: 'Accounts'     },
+  { num: '3',   label: 'Languages'    },
 ];
 
 const MOTTO = '"The world is a book, and those who do not travel read only one page."';
 
 const GOALS = [
-  '🎯 JLPT N3 by Dec 2026',
-  '🌏 Visit 3 new countries',
+  '🌏 Travel abroad this year',
+  '🀄 Reach HSK 3 in Mandarin',
   '📚 Read 20 books this year',
 ];
+
+// ── Professional profile (from resume) ──────────────────────────────────────
+const PROFILE = {
+  name:    'Nguyen Thanh Quan',
+  title:   'HR & Sales Training · HRD',
+  company: 'Enrich Operating System (Mango for Salon)',
+  period:  'Sep 2025 – Present',
+  summary: 'Dynamic Sales & Business Development professional with 6+ years driving revenue growth, building client portfolios, and leading high-performing teams across SaaS, retail, and duty-free environments.',
+  metrics: [
+    { num: '700→4K+', label: 'Merchant Accounts' },
+    { num: '20%→5%',  label: 'Churn Rate'        },
+    { num: '100+',    label: 'Staff Trained'      },
+    { num: '85%+',    label: 'Avg Pass Rate'      },
+  ],
+  skills: [
+    'B2B/B2C Sales', 'Team Training & Coaching', 'HR & Talent Management',
+    'KPI & P&L Management', 'Account Management', 'Ops & Process Design',
+    'CRM / HRM Systems', 'Revenue Forecasting',
+  ],
+  certs: [
+    { name: 'IELTS 6.0 (B2)', issuer: 'British Council · 2018' },
+    { name: 'Mid-Level Management & Leadership', issuer: 'HUREDIN Institute · 2025 · Excellent' },
+  ],
+};
 
 const NEWS = [
   { name: 'ZNews',     url: 'https://znews.vn' },
@@ -64,7 +88,7 @@ export default function MainHubView({ onNavigate }: MainHubViewProps) {
           <p className="lp-greeting lp-anim" style={{ '--d': '0ms' } as React.CSSProperties}>Hi, I am</p>
           <h1 className="lp-name lp-anim" style={{ '--d': '130ms' } as React.CSSProperties}>Quân</h1>
           <p className="lp-role lp-anim" style={{ '--d': '260ms' } as React.CSSProperties}>
-            Software QA Engineer · Language Learner · Solo Traveler
+            HR & Sales Training HRD · Language Learner · Traveler
           </p>
 
           {/* Motto */}
@@ -125,6 +149,46 @@ export default function MainHubView({ onNavigate }: MainHubViewProps) {
             className="lp-photo"
             onError={e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }}
           />
+        </div>
+
+      </div>
+
+      {/* ── Professional profile section ── */}
+      <div className="lp-profile">
+
+        {/* Role + summary */}
+        <div className="lp-profile-left">
+          <div className="lp-profile-badge">💼 Current Role</div>
+          <div className="lp-profile-title">{PROFILE.title}</div>
+          <div className="lp-profile-company">{PROFILE.company}</div>
+          <div className="lp-profile-period">{PROFILE.period}</div>
+          <p className="lp-profile-summary">{PROFILE.summary}</p>
+          <div className="lp-profile-certs">
+            {PROFILE.certs.map(c => (
+              <div key={c.name} className="lp-profile-cert">
+                <span className="lp-profile-cert-name">🎓 {c.name}</span>
+                <span className="lp-profile-cert-issuer">{c.issuer}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Metrics + skills */}
+        <div className="lp-profile-right">
+          <div className="lp-profile-metrics">
+            {PROFILE.metrics.map(m => (
+              <div key={m.label} className="lp-profile-metric">
+                <div className="lp-profile-metric-num">{m.num}</div>
+                <div className="lp-profile-metric-label">{m.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="lp-profile-skills-label">Core Skills</div>
+          <div className="lp-profile-skills">
+            {PROFILE.skills.map(s => (
+              <span key={s} className="lp-profile-skill">{s}</span>
+            ))}
+          </div>
         </div>
 
       </div>
