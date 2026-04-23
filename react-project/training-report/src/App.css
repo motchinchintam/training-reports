@@ -2361,42 +2361,32 @@ body { margin: 0; background: var(--bg); }
 }
 
 /* ── Hero ──────────────────────────────────────────────────────────── */
-/* ── Full-bleed split hero matching App aesthetic ── */
-.pt-hero {
-  display: grid;
-  grid-template-columns: 56% 44%;
+/* ── Homepage hero — uses lp-split classes, just needs min-height ── */
+.home-hero-split {
   min-height: calc(100svh - 58px);
-  overflow: hidden;
 }
-.pt-hero-text {
-  background: #EDE8D3;
-  display: flex; flex-direction: column; gap: 1.5rem;
-  justify-content: center;
-  padding: 4rem 4rem 4rem 3.5rem;
-  clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
-  position: relative; z-index: 1;
+
+/* CTA row inside cream hero panel */
+.lp-ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: .25rem; }
+
+/* Secondary button on cream bg */
+.home-btn-secondary {
+  display: inline-flex; align-items: center;
+  background: none; color: #1A2E17;
+  border: 1.5px solid rgba(26,46,23,.3); border-radius: 8px;
+  padding: 12px 24px; font-size: 14px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  transition: background .15s, border-color .15s;
 }
-.pt-hero-headline {
-  font-size: clamp(2rem, 3.8vw, 3rem);
-  font-weight: 900; color: #1A2E17;
-  line-height: 1.12; letter-spacing: -.03em;
-  margin: 0;
-}
-.pt-hero-sub {
-  font-size: 16px; color: #5A6B50;
-  line-height: 1.7; max-width: 480px; margin: 0;
-}
-.pt-hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-.pt-hero-visual {
-  background: #111D0E;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden; padding: 2.5rem 2rem;
-}
-.pt-hero-photo {
-  width: 260px; height: 340px;
-  object-fit: cover; object-position: center top;
-  display: block; border-radius: 18px;
-  box-shadow: 0 20px 50px rgba(0,0,0,.55);
+.home-btn-secondary:hover { background: rgba(26,46,23,.08); border-color: rgba(26,46,23,.5); }
+
+/* Dark mode overrides for home hero secondary btn */
+.pt-dark .home-btn-secondary { color: #EDE8D3; border-color: rgba(237,232,211,.25); }
+.pt-dark .home-btn-secondary:hover { background: rgba(237,232,211,.08); }
+
+/* Mobile: stack hero panels */
+@media (max-width: 768px) {
+  .home-hero-split { min-height: auto; }
 }
 
 /* ── Selected Work grid ────────────────────────────────────────────── */
@@ -2907,10 +2897,6 @@ body { margin: 0; background: var(--bg); }
 
 /* ── Responsive ────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .pt-hero { grid-template-columns: 1fr; min-height: auto; }
-  .pt-hero-text { clip-path: none; padding: 3rem 1.5rem 2.5rem; }
-  .pt-hero-visual { min-height: 280px; padding: 2rem 1.5rem; }
-  .pt-hero-photo { width: 200px; height: 260px; }
   .pt-projects-grid { grid-template-columns: 1fr; }
   .pt-about-snap { grid-template-columns: 1fr; gap: 2rem; }
   .pt-insights-grid { grid-template-columns: 1fr; }
@@ -3091,16 +3077,7 @@ body { margin: 0; background: var(--bg); }
 .pt-dark .pt-strength-card { border-color: #2e2e2e; }
 .pt-dark .pt-strength-card:hover { background: #1c1c1c; }
 
-/* Hero dark mode */
-.pt-dark .pt-hero { background: transparent; border-bottom-color: #2e2e2e; }
-.pt-dark .pt-hero-text    { background: #0D1A0B; }
-.pt-dark .pt-hero-visual  { background: #0a1208; }
-.pt-dark .pt-hero-headline { color: #EDE8D3; }
-.pt-dark .pt-hero-sub      { color: rgba(237,232,211,.6); }
-.pt-dark .pt-hero-greeting { color: #6B9E50; }
-.pt-dark .pt-hero .pt-btn-secondary { color: #EDE8D3; border-color: rgba(237,232,211,.25); }
-.pt-dark .pt-hero .pt-btn-secondary:hover { background: rgba(237,232,211,.07); }
-.pt-dark .pt-hero .pt-eyebrow { color: #7A9B5A; }
+/* Home hero dark mode — lp-panel colours already handled by lp-dark / pt-dark lp- overrides */
 
 /* LP (MainHubView) dark already has .lp-dark, but honour global .pt-dark too */
 .pt-dark .lp-panel-left { background: #0D1A0B; }

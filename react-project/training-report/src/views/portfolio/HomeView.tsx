@@ -1,7 +1,23 @@
+import type React from 'react';
 import { PROJECTS, INSIGHTS } from '../../data/portfolio';
 import { useLang } from '../../i18n/index';
 
 interface HomeViewProps { onNavigate: (v: string) => void; }
+
+const MOTTO = '"The world is a book, and those who do not travel read only one page."';
+
+const STATS = [
+  { num: '6+',   label: 'Yrs Exp'       },
+  { num: '100+', label: 'Staff Trained'  },
+  { num: '4K+',  label: 'Accounts'      },
+  { num: '3',    label: 'Languages'     },
+];
+
+const CURRENTLY = [
+  { icon: '🀄', label: 'Learning Mandarin' },
+  { icon: '🇬🇧', label: 'Improving English' },
+  { icon: '✈️', label: 'Planning to travel' },
+];
 
 const SOCIAL_STATIC = [
   { platform: 'instagram', image: '', link: 'https://www.instagram.com/motchinchintam/', likes: 47 },
@@ -10,6 +26,10 @@ const SOCIAL_STATIC = [
 ];
 
 const SOCIAL_DATES = ['Apr 2026', 'Mar 2026', 'Mar 2026'];
+
+function anim(d: string): React.CSSProperties {
+  return { '--d': d } as React.CSSProperties;
+}
 
 export default function HomeView({ onNavigate }: HomeViewProps) {
   const base = import.meta.env.BASE_URL;
@@ -22,27 +42,72 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
   return (
     <div className="pt-page">
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="pt-hero">
-        <div className="pt-hero-text">
-          <p className="pt-hero-greeting">{s.home.greeting}</p>
-          <span className="pt-eyebrow">{s.home.eyebrow}</span>
-          <h1 className="pt-hero-headline">{s.home.heroHeadline}</h1>
-          <p className="pt-hero-sub">{s.home.heroSub}</p>
-          <div className="pt-hero-ctas">
-            <button className="pt-btn-primary"   onClick={() => onNavigate('work')}>{s.common.viewWork}</button>
-            <button className="pt-btn-secondary" onClick={() => onNavigate('contact')}>{s.common.contact}</button>
+      {/* ── Hero — App-style split layout ────────────────────────────────── */}
+      <div className="lp-split home-hero-split">
+
+        {/* LEFT — cream info panel */}
+        <div className="lp-panel-left">
+
+          {/* Identity */}
+          <p className="lp-greeting lp-anim" style={anim('0ms')}>{s.home.greeting}</p>
+          <h1 className="lp-name lp-anim"    style={anim('100ms')}>Quân</h1>
+          <p className="lp-role lp-anim"     style={anim('200ms')}>
+            HR &amp; Sales Training · Language Learner · Traveler
+          </p>
+
+          {/* Quote */}
+          <p className="lp-quote lp-anim" style={anim('300ms')}>{MOTTO}</p>
+
+          {/* Social icons */}
+          <div className="lp-socials lp-anim" style={anim('380ms')}>
+            <a href="https://www.facebook.com/availableeeeee/" target="_blank" rel="noopener noreferrer"
+              className="lp-social-btn lp-social-fb" title="Facebook">f</a>
+            <a href="https://www.instagram.com/motchinchintam" target="_blank" rel="noopener noreferrer"
+              className="lp-social-btn lp-social-ig" title="Instagram">◎</a>
+            <a href="https://zalo.me/0916366443" target="_blank" rel="noopener noreferrer"
+              className="lp-social-btn lp-social-zalo" title="Zalo">Z</a>
           </div>
+
+          {/* Currently */}
+          <div className="lp-currently lp-anim" style={anim('460ms')}>
+            <div className="lp-section-label">Currently</div>
+            <div className="lp-currently-chips">
+              {CURRENTLY.map(c => (
+                <span key={c.label} className="lp-currently-chip">{c.icon} {c.label}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="lp-stats lp-anim" style={anim('540ms')}>
+            {STATS.map((st, i) => (
+              <div key={st.label} className="lp-stat"
+                style={i < STATS.length - 1 ? { borderRight: '1px solid rgba(92,122,60,0.2)' } : {}}>
+                <div className="lp-stat-num">{st.num}</div>
+                <div className="lp-stat-label">{st.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA buttons */}
+          <div className="lp-ctas lp-anim" style={anim('620ms')}>
+            <button className="pt-btn-primary"      onClick={() => onNavigate('work')}>{s.common.viewWork}</button>
+            <button className="home-btn-secondary"  onClick={() => onNavigate('contact')}>{s.common.contact}</button>
+          </div>
+
         </div>
-        <div className="pt-hero-visual">
+
+        {/* RIGHT — dark photo panel */}
+        <div className="lp-panel-right">
           <img
             src={`${base}photo6.jpg`}
             alt="Nguyen Thanh Quan"
-            className="pt-hero-photo"
-            onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = '0'; }}
+            className="lp-photo"
+            onError={e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }}
           />
         </div>
-      </section>
+
+      </div>
 
       {/* ── Selected Work ─────────────────────────────────────────────────── */}
       <section className="pt-section pt-section--alt">
