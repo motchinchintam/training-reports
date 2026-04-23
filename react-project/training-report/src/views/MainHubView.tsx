@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import type React from 'react';
 
 interface MainHubViewProps {
   onNavigate: (view: string) => void;
+  dark: boolean;
 }
 
 const HUBS = [
@@ -62,9 +63,8 @@ const NEWS = [
   { name: 'VnExpress', url: 'https://vnexpress.net' },
 ];
 
-export default function MainHubView({ onNavigate }: MainHubViewProps) {
+export default function MainHubView({ onNavigate, dark }: MainHubViewProps) {
   const base = import.meta.env.BASE_URL;
-  const [dark, setDark] = useState(false);
 
   return (
     <div className={`lp-root${dark ? ' lp-dark' : ''}`}>
@@ -74,15 +74,6 @@ export default function MainHubView({ onNavigate }: MainHubViewProps) {
 
         {/* LEFT — info panel */}
         <div className="lp-panel-left">
-
-          {/* Theme toggle */}
-          <button
-            className="lp-theme-toggle"
-            onClick={() => setDark(d => !d)}
-            title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {dark ? '☀️' : '🌙'}
-          </button>
 
           {/* Identity */}
           <p className="lp-greeting lp-anim" style={{ '--d': '0ms' } as React.CSSProperties}>Hi, I am</p>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LangProvider, useLang, type Lang } from './i18n/index';
 import NavSearch from './components/NavSearch';
+import PasscodeGate, { isHubUnlocked } from './components/PasscodeGate';
 
 // Portfolio pages
 import HomeView     from './views/portfolio/HomeView';
@@ -112,6 +113,16 @@ const HUB_GROUPS: HubGroup[] = [
 
 const PORTFOLIO_VIEWS = new Set<View>(['home', 'work', 'about', 'insights', 'contact']);
 
+const ALL_VIEWS = new Set<View>([
+  'home', 'work', 'about', 'insights', 'contact',
+  'apps',
+  'hub', 'testtracker', 'attendance', 'kpi', 'email', 'datamanager', 'cohort', 'printreport', 'document',
+  'learnhub', 'flashcard', 'quiz', 'studytimer', 'goals', 'studynotes',
+  'travelhub', 'itinerary', 'triptemplate',
+  'financehub', 'expenses', 'tripbudget', 'savings',
+  'journalhub', 'dailyjournal', 'moodtracker', 'weeklyreview',
+]);
+
 function getActiveHub(view: View): HubGroup | null {
   if (PORTFOLIO_VIEWS.has(view) || view === 'apps') return null;
   return HUB_GROUPS.find(g => g.tools.some(t => t.id === view)) ?? null;
@@ -119,13 +130,21 @@ function getActiveHub(view: View): HubGroup | null {
 
 function readHash(): View {
   const hash = window.location.hash.replace(/^#\/?/, '').split('?')[0];
-  return (PORTFOLIO_VIEWS.has(hash as View) ? hash : 'home') as View;
+  return (ALL_VIEWS.has(hash as View) ? hash : 'home') as View;
 }
 
 function AppInner() {
   const { lang, setLang, s } = useLang();
   const [view, setView] = useState<View>(readHash);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dark, setDark] = useState(() => localStorage.getItem('pt-dark') === '1');
+  const [hubUnlocked, setHubUnlocked] = useState(isHubUnlocked);
+
+  function toggleDark() {
+    const next = !dark;
+    setDark(next);
+    localStorage.setItem('pt-dark', next ? '1' : '0');
+  }
 
   /* sync URL hash → view on browser back/forward */
   useEffect(() => {
@@ -139,10 +158,11 @@ function AppInner() {
     setView(newView);
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-    /* update URL hash for portfolio pages so links are shareable */
-    if (PORTFOLIO_VIEWS.has(newView)) {
-      const hash = newView === 'home' ? '' : `#${newView}`;
-      window.history.pushState(null, '', hash || window.location.pathname);
+    /* update URL hash for all views so links are shareable */
+    if (newView === 'home') {
+      window.history.pushState(null, '', window.location.pathname);
+    } else {
+      window.history.pushState(null, '', `#${newView}`);
     }
   }
 
@@ -164,7 +184,7 @@ function AppInner() {
   ];
 
   return (
-    <div className={`app-v2${isApps ? ' app--landing' : ''}`}>
+    <div className={`app-v2${isApps ? ' app--landing' : ''}${dark ? ' pt-dark' : ''}`}>
 
       {/* ── Navigation ─────────────────────────────────────────────────── */}
       <header className="topnav">
@@ -204,6 +224,16 @@ function AppInner() {
               </button>
             ))}
           </div>
+
+          {/* Dark mode toggle */}
+          <button
+            className="topnav-dark-btn"
+            onClick={toggleDark}
+            title={dark ? 'Light mode' : 'Dark mode'}
+            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {dark ? '☀️' : '🌙'}
+          </button>
 
           {/* Apps access button */}
           <button
@@ -303,35 +333,40 @@ function AppInner() {
         {view === 'about'       && <AboutView    onNavigate={navigate} />}
         {view === 'insights'    && <InsightsView onNavigate={navigate} />}
         {view === 'contact'     && <ContactView  onNavigate={navigate} />}
-        {view === 'apps'        && <MainHubView  onNavigate={navigate} />}
+        {view === 'apps'        && <MainHubView  onNavigate={navigate} dark={dark} />}
+
+        {/* Passcode gate — shown when navigating into any hub tool */}
+        {!isPortfolio && !isApps && !hubUnlocked && (
+          <PasscodeGate onUnlock={() => setHubUnlocked(true)} />
+        )}
 
         {/* Existing tool views */}
-        {view === 'hub'          && <HubView onNavigate={navigate} />}
-        {view === 'testtracker'  && <TestTrackerView />}
-        {view === 'attendance'   && <AttendanceGridView />}
-        {view === 'kpi'          && <KPIView />}
-        {view === 'email'        && <EmailExportView />}
-        {view === 'datamanager'  && <DataManagerView />}
-        {view === 'cohort'       && <CohortDashboardView />}
-        {view === 'printreport'  && <PrintReportView />}
-        {view === 'document'     && <TrainingDocumentView />}
-        {view === 'learnhub'     && <LearningHubView onNavigate={navigate} />}
-        {view === 'flashcard'    && <FlashcardView />}
-        {view === 'quiz'         && <QuizView />}
-        {view === 'studytimer'   && <StudyTimerView />}
-        {view === 'goals'        && <GoalTrackerView />}
-        {view === 'studynotes'   && <StudyNotesView />}
-        {view === 'travelhub'    && <TravelHubView onNavigate={navigate} />}
-        {view === 'itinerary'    && <TravelItineraryView />}
-        {view === 'triptemplate' && <TripTemplateView />}
-        {view === 'financehub'   && <FinanceHubView onNavigate={navigate} />}
-        {view === 'expenses'     && <ExpenseTrackerView />}
-        {view === 'tripbudget'   && <TripBudgetView />}
-        {view === 'savings'      && <SavingsGoalsView />}
-        {view === 'journalhub'   && <JournalHubView onNavigate={navigate} />}
-        {view === 'dailyjournal' && <DailyJournalView />}
-        {view === 'moodtracker'  && <MoodTrackerView />}
-        {view === 'weeklyreview' && <WeeklyReviewView />}
+        {view === 'hub'          && hubUnlocked && <HubView onNavigate={navigate} />}
+        {view === 'testtracker'  && hubUnlocked && <TestTrackerView />}
+        {view === 'attendance'   && hubUnlocked && <AttendanceGridView />}
+        {view === 'kpi'          && hubUnlocked && <KPIView />}
+        {view === 'email'        && hubUnlocked && <EmailExportView />}
+        {view === 'datamanager'  && hubUnlocked && <DataManagerView />}
+        {view === 'cohort'       && hubUnlocked && <CohortDashboardView />}
+        {view === 'printreport'  && hubUnlocked && <PrintReportView />}
+        {view === 'document'     && hubUnlocked && <TrainingDocumentView />}
+        {view === 'learnhub'     && hubUnlocked && <LearningHubView onNavigate={navigate} />}
+        {view === 'flashcard'    && hubUnlocked && <FlashcardView />}
+        {view === 'quiz'         && hubUnlocked && <QuizView />}
+        {view === 'studytimer'   && hubUnlocked && <StudyTimerView />}
+        {view === 'goals'        && hubUnlocked && <GoalTrackerView />}
+        {view === 'studynotes'   && hubUnlocked && <StudyNotesView />}
+        {view === 'travelhub'    && hubUnlocked && <TravelHubView onNavigate={navigate} />}
+        {view === 'itinerary'    && hubUnlocked && <TravelItineraryView />}
+        {view === 'triptemplate' && hubUnlocked && <TripTemplateView />}
+        {view === 'financehub'   && hubUnlocked && <FinanceHubView onNavigate={navigate} />}
+        {view === 'expenses'     && hubUnlocked && <ExpenseTrackerView />}
+        {view === 'tripbudget'   && hubUnlocked && <TripBudgetView />}
+        {view === 'savings'      && hubUnlocked && <SavingsGoalsView />}
+        {view === 'journalhub'   && hubUnlocked && <JournalHubView onNavigate={navigate} />}
+        {view === 'dailyjournal' && hubUnlocked && <DailyJournalView />}
+        {view === 'moodtracker'  && hubUnlocked && <MoodTrackerView />}
+        {view === 'weeklyreview' && hubUnlocked && <WeeklyReviewView />}
       </main>
     </div>
   );
