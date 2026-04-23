@@ -2389,6 +2389,90 @@ body { margin: 0; background: var(--bg); }
   .home-hero-split { min-height: auto; }
 }
 
+/* ── Trust / Metrics bar ───────────────────────────────────────────── */
+.pt-trust-bar {
+  background: #111D0E;
+  padding: 2rem 0;
+}
+.pt-trust-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 3rem;
+  display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
+}
+.pt-trust-label {
+  font-size: 10px; font-weight: 800; color: rgba(237,232,211,.35);
+  text-transform: uppercase; letter-spacing: .12em; flex-shrink: 0;
+}
+.pt-trust-metrics {
+  display: flex; gap: 0; flex: 1; flex-wrap: wrap;
+}
+.pt-trust-metric {
+  flex: 1; min-width: 160px;
+  padding: .75rem 1.5rem;
+  border-left: 1px solid rgba(237,232,211,.08);
+}
+.pt-trust-metric:first-child { border-left: none; }
+.pt-trust-num     { font-size: 1.4rem; font-weight: 900; color: #EDE8D3; line-height: 1; }
+.pt-trust-desc    { font-size: 11px; color: rgba(237,232,211,.55); margin-top: 3px; }
+.pt-trust-company { font-size: 10px; color: rgba(237,232,211,.25); margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ── Home work list (replaces project cards) ───────────────────────── */
+.pt-home-work-list { display: flex; flex-direction: column; }
+.pt-home-work-item {
+  display: grid;
+  grid-template-columns: 36px 1fr auto 28px;
+  align-items: center; gap: 1.5rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--pt-border);
+  cursor: pointer; transition: background .12s;
+}
+.pt-home-work-item:first-child { border-top: 1px solid var(--pt-border); }
+.pt-home-work-item:hover { background: var(--pt-bg2); margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; border-radius: 10px; }
+.pt-home-work-num  { font-size: 12px; font-weight: 900; color: var(--pt-text3); }
+.pt-home-work-body { display: flex; flex-direction: column; gap: .4rem; }
+.pt-home-work-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.pt-home-work-title   { font-size: 1.1rem; font-weight: 800; color: var(--pt-text); margin: 0; }
+.pt-home-work-context { font-size: 13px; color: var(--pt-text2); line-height: 1.55; margin: 0; }
+.pt-home-work-result  { text-align: right; flex-shrink: 0; }
+.pt-home-work-result-label { font-size: 9px; font-weight: 700; color: var(--pt-text3); text-transform: uppercase; letter-spacing: .07em; }
+.pt-home-work-result-val   { font-size: 13px; font-weight: 800; color: var(--pt-accent); white-space: nowrap; margin-top: 2px; }
+.pt-home-work-arrow  { font-size: 1.1rem; color: var(--pt-text3); transition: transform .15s, color .15s; }
+.pt-home-work-item:hover .pt-home-work-arrow { transform: translateX(4px); color: var(--pt-text); }
+
+/* ── Home about preview ────────────────────────────────────────────── */
+.pt-home-about {
+  display: grid; grid-template-columns: 340px 1fr; gap: 4rem; align-items: center;
+}
+.pt-home-about-photos {
+  position: relative; height: 340px; flex-shrink: 0;
+}
+.pt-home-about-text  { display: flex; flex-direction: column; gap: 1rem; }
+.pt-home-about-body  { font-size: 15px; color: var(--pt-text2); line-height: 1.8; margin: 0; }
+
+/* ── CTA section extras ────────────────────────────────────────────── */
+.pt-cta-sub   { font-size: 13px; color: rgba(255,255,255,.5); margin: .4rem 0 0; }
+.pt-cta-linkedin {
+  display: inline-flex; align-items: center;
+  background: rgba(255,255,255,.12); color: #fff;
+  border: 1.5px solid rgba(255,255,255,.25); border-radius: 8px;
+  padding: 12px 24px; font-size: 14px; font-weight: 700;
+  font-family: inherit; text-decoration: none;
+  transition: background .15s;
+}
+.pt-cta-linkedin:hover { background: rgba(255,255,255,.2); }
+
+/* Dark mode — trust bar already dark so stays same */
+.pt-dark .pt-home-work-item:hover { background: #1c1c1c; }
+.pt-dark .pt-home-about-photos .pt-collage-accent { border-color: #2a2a2a; }
+
+@media (max-width: 900px) {
+  .pt-home-about { grid-template-columns: 1fr; gap: 2rem; }
+  .pt-home-about-photos { height: 240px; }
+  .pt-home-work-item { grid-template-columns: 32px 1fr; }
+  .pt-home-work-result, .pt-home-work-arrow { display: none; }
+  .pt-trust-inner { padding: 0 1.5rem; gap: 1rem; }
+  .pt-trust-metric { min-width: 130px; padding: .5rem 1rem; }
+}
+
 /* ── Selected Work grid ────────────────────────────────────────────── */
 .pt-projects-grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;

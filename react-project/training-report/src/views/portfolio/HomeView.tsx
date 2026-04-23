@@ -1,5 +1,5 @@
 import type React from 'react';
-import { PROJECTS, INSIGHTS } from '../../data/portfolio';
+import { PROJECTS } from '../../data/portfolio';
 import { useLang } from '../../i18n/index';
 
 interface HomeViewProps { onNavigate: (v: string) => void; }
@@ -7,10 +7,10 @@ interface HomeViewProps { onNavigate: (v: string) => void; }
 const MOTTO = '"The world is a book, and those who do not travel read only one page."';
 
 const STATS = [
-  { num: '6+',   label: 'Yrs Exp'       },
-  { num: '100+', label: 'Staff Trained'  },
-  { num: '4K+',  label: 'Accounts'      },
-  { num: '3',    label: 'Languages'     },
+  { num: '6+',   label: 'Yrs Experience'  },
+  { num: '100+', label: 'Staff Trained'   },
+  { num: '4K+',  label: 'Merchants'       },
+  { num: '85%+', label: 'Avg Pass Rate'   },
 ];
 
 const CURRENTLY = [
@@ -19,13 +19,12 @@ const CURRENTLY = [
   { icon: '✈️', label: 'Planning to travel' },
 ];
 
-const SOCIAL_STATIC = [
-  { platform: 'instagram', image: '', link: 'https://www.instagram.com/motchinchintam/', likes: 47 },
-  { platform: 'facebook',  image: '', link: 'https://www.facebook.com/motchinchintam',  likes: 62 },
-  { platform: 'instagram', image: '', link: 'https://www.instagram.com/motchinchintam/', likes: 38 },
+const TRUST_METRICS = [
+  { metric: '700 → 4,000+', label: 'Merchant accounts scaled',    company: 'Global Liaison' },
+  { metric: '20% → 5%',     label: 'Client churn rate reduced',   company: 'Zota Brand'     },
+  { metric: '100+',         label: 'Staff trained & onboarded',   company: 'Multiple roles'  },
+  { metric: '85%+',         label: 'Average training pass rate',  company: 'Mango for Salon' },
 ];
-
-const SOCIAL_DATES = ['Apr 2026', 'Mar 2026', 'Mar 2026'];
 
 function anim(d: string): React.CSSProperties {
   return { '--d': d } as React.CSSProperties;
@@ -35,27 +34,21 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
   const base = import.meta.env.BASE_URL;
   const { s } = useLang();
 
-  const projects  = PROJECTS.slice(0, 3).map((p, i) => ({ ...p, ...s.data.projects[i] }));
-  const insights  = INSIGHTS.map((ins, i) => ({ ...ins, ...s.data.insights[i] }));
-  const strengths = s.data.strengths;
+  const projects = PROJECTS.slice(0, 3).map((p, i) => ({ ...p, ...s.data.projects[i] }));
 
   return (
     <div className="pt-page">
 
-      {/* ── Hero — App-style split layout ────────────────────────────────── */}
+      {/* ── 1. HERO — App-style split layout ─────────────────────────────── */}
       <div className="lp-split home-hero-split">
 
         {/* LEFT — cream info panel */}
         <div className="lp-panel-left">
-
-          {/* Identity */}
           <p className="lp-greeting lp-anim" style={anim('0ms')}>{s.home.greeting}</p>
           <h1 className="lp-name lp-anim"    style={anim('100ms')}>Quân</h1>
           <p className="lp-role lp-anim"     style={anim('200ms')}>
-            HR &amp; Sales Training · Language Learner · Traveler
+            HR &amp; Sales Training · HRD · Language Learner
           </p>
-
-          {/* Quote */}
           <p className="lp-quote lp-anim" style={anim('300ms')}>{MOTTO}</p>
 
           {/* Social icons */}
@@ -89,12 +82,11 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
             ))}
           </div>
 
-          {/* CTA buttons */}
+          {/* CTAs */}
           <div className="lp-ctas lp-anim" style={anim('620ms')}>
-            <button className="pt-btn-primary"      onClick={() => onNavigate('work')}>{s.common.viewWork}</button>
-            <button className="home-btn-secondary"  onClick={() => onNavigate('contact')}>{s.common.contact}</button>
+            <button className="pt-btn-primary"     onClick={() => onNavigate('work')}>{s.common.viewWork}</button>
+            <button className="home-btn-secondary" onClick={() => onNavigate('contact')}>{s.common.contact}</button>
           </div>
-
         </div>
 
         {/* RIGHT — dark photo panel */}
@@ -106,143 +98,93 @@ export default function HomeView({ onNavigate }: HomeViewProps) {
             onError={e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }}
           />
         </div>
-
       </div>
 
-      {/* ── Selected Work ─────────────────────────────────────────────────── */}
+      {/* ── 2. TRUST / METRICS BAR ────────────────────────────────────────── */}
+      <div className="pt-trust-bar">
+        <div className="pt-trust-inner">
+          <span className="pt-trust-label">Key Results</span>
+          <div className="pt-trust-metrics">
+            {TRUST_METRICS.map(m => (
+              <div key={m.metric} className="pt-trust-metric">
+                <div className="pt-trust-num">{m.metric}</div>
+                <div className="pt-trust-desc">{m.label}</div>
+                <div className="pt-trust-company">{m.company}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 3. SELECTED WORK ──────────────────────────────────────────────── */}
       <section className="pt-section pt-section--alt">
         <div className="pt-section-inner">
           <div className="pt-section-header">
-            <h2 className="pt-section-title">{s.home.selectedWork}</h2>
+            <div>
+              <span className="pt-eyebrow">{s.home.selectedWork}</span>
+              <h2 className="pt-section-title" style={{ marginTop: '.25rem' }}>{s.home.selectedWork}</h2>
+            </div>
             <button className="pt-link-btn" onClick={() => onNavigate('work')}>{s.common.seeAll}</button>
           </div>
-          <div className="pt-projects-grid">
-            {projects.map(p => (
-              <div key={p.id} className="pt-project-card" onClick={() => onNavigate('work')}>
-                <div className="pt-project-tags">
-                  {p.tags.map(t => <span key={t} className="pt-tag">{t}</span>)}
+          <div className="pt-home-work-list">
+            {projects.map((p, i) => (
+              <div key={p.id} className="pt-home-work-item" onClick={() => onNavigate('work')}>
+                <div className="pt-home-work-num">0{i + 1}</div>
+                <div className="pt-home-work-body">
+                  <div className="pt-home-work-tags">
+                    {p.tags.map(t => <span key={t} className="pt-tag">{t}</span>)}
+                  </div>
+                  <h3 className="pt-home-work-title">{p.title}</h3>
+                  <p className="pt-home-work-context">{p.context}</p>
                 </div>
-                <h3 className="pt-project-title">{p.title}</h3>
-                <p className="pt-project-context">{p.context}</p>
-                <div className="pt-project-result">{p.result}</div>
+                <div className="pt-home-work-result">
+                  <div className="pt-home-work-result-label">Result</div>
+                  <div className="pt-home-work-result-val">{p.result}</div>
+                </div>
+                <div className="pt-home-work-arrow">→</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── About Snapshot ────────────────────────────────────────────────── */}
+      {/* ── 4. ABOUT PREVIEW ──────────────────────────────────────────────── */}
       <section className="pt-section">
-        <div className="pt-section-inner pt-about-snap">
-          <div className="pt-about-snap-text">
+        <div className="pt-section-inner pt-home-about">
+          <div className="pt-home-about-photos">
+            <img src={`${base}photo1.jpg`} alt="" className="pt-collage-main"   />
+            <img src={`${base}photo2.jpg`} alt="" className="pt-collage-accent" />
+          </div>
+          <div className="pt-home-about-text">
             <span className="pt-eyebrow">{s.home.aboutEyebrow}</span>
             <h2 className="pt-section-title">{s.home.aboutHeadline}</h2>
-            <p className="pt-about-snap-body">{s.home.aboutBody}</p>
-            <div className="pt-snap-stats">
-              <div className="pt-snap-stat"><span className="pt-abs-num">6+</span><span className="pt-abs-label">{s.home.statsYrs}</span></div>
-              <div className="pt-snap-stat"><span className="pt-abs-num">100+</span><span className="pt-abs-label">{s.home.statsTrained}</span></div>
-              <div className="pt-snap-stat"><span className="pt-abs-num">4K+</span><span className="pt-abs-label">{s.home.statsAccounts}</span></div>
-              <div className="pt-snap-stat"><span className="pt-abs-num">85%+</span><span className="pt-abs-label">{s.home.statsPass}</span></div>
-            </div>
-            <button className="pt-link-btn" onClick={() => onNavigate('about')}>{s.home.fullAbout}</button>
-          </div>
-          <div className="pt-about-snap-visual">
-            <div className="pt-photo-collage">
-              <img src={`${base}photo1.jpg`} alt="" className="pt-collage-main"   />
-              <img src={`${base}photo2.jpg`} alt="" className="pt-collage-accent" />
-            </div>
+            <p className="pt-home-about-body">{s.home.aboutBody}</p>
+            <button className="pt-btn-primary" style={{ marginTop: '.5rem' }} onClick={() => onNavigate('about')}>
+              {s.home.fullAbout}
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ── Core Strengths ────────────────────────────────────────────────── */}
-      <section className="pt-section pt-section--alt">
-        <div className="pt-section-inner">
-          <h2 className="pt-section-title">{s.home.coreStrengths}</h2>
-          <p className="pt-section-sub">{s.home.strengthsSub}</p>
-          <div className="pt-strengths-grid">
-            {strengths.map((st, i) => (
-              <div key={st.title} className="pt-strength-card">
-                <span className="pt-strength-num">0{i + 1}</span>
-                <h3 className="pt-strength-title">{st.title}</h3>
-                <p className="pt-strength-desc">{st.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Photo strip ──────────────────────────────────────────────────── */}
-      <div className="pt-photo-strip-wrap">
-        <div className="pt-photo-strip">
-          {['photo3', 'photo4', 'photo5', 'photo7'].map(p => (
-            <img key={p} src={`${base}${p}.jpg`} alt="" className="pt-strip-photo" />
-          ))}
-        </div>
-      </div>
-
-      {/* ── Insights ─────────────────────────────────────────────────────── */}
-      <section className="pt-section">
-        <div className="pt-section-inner">
-          <div className="pt-section-header">
-            <h2 className="pt-section-title">{s.insights.pageTitle}</h2>
-            <button className="pt-link-btn" onClick={() => onNavigate('insights')}>{s.common.seeAll}</button>
-          </div>
-          <div className="pt-insights-grid">
-            {insights.map(ins => (
-              <div key={ins.id} className="pt-insight-card" onClick={() => onNavigate('insights')}>
-                <div className="pt-insight-meta">
-                  <span className="pt-tag">{ins.tag}</span>
-                  <span className="pt-insight-time">{ins.readTime} · {ins.date}</span>
-                </div>
-                <h3 className="pt-insight-title">{ins.title}</h3>
-                <p className="pt-insight-excerpt">{ins.excerpt}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Social Feed ──────────────────────────────────────────────────── */}
-      <section className="pt-section pt-section--alt">
-        <div className="pt-section-inner">
-          <div className="pt-section-header">
-            <h2 className="pt-section-title">{s.home.fromMyFeed}</h2>
-            <div className="pt-social-links">
-              <a href="https://www.instagram.com/motchinchintam/" target="_blank" rel="noopener noreferrer" className="pt-social-pill pt-social-pill--ig">Instagram ↗</a>
-              <a href="https://www.facebook.com/motchinchintam" target="_blank" rel="noopener noreferrer" className="pt-social-pill pt-social-pill--fb">Facebook ↗</a>
-            </div>
-          </div>
-          <div className="pt-social-grid">
-            {SOCIAL_STATIC.map((post, i) => (
-              <a key={i} href={post.link} target="_blank" rel="noopener noreferrer" className="pt-social-card">
-                <div className="pt-social-card-top">
-                  <span className={`pt-social-badge pt-social-badge--${post.platform}`}>
-                    {post.platform === 'instagram' ? '📸 Instagram' : '📘 Facebook'}
-                  </span>
-                  <span className="pt-social-date">{SOCIAL_DATES[i]}</span>
-                </div>
-                <p className="pt-social-caption">{s.home.socialCaptions[i]}</p>
-                <div className="pt-social-card-footer">
-                  <span className="pt-social-likes">♥ {post.likes}</span>
-                  <span className="pt-social-cta">{s.common.read}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-          <p className="pt-social-note">{s.home.socialNote}</p>
-        </div>
-      </section>
-
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
+      {/* ── 5. CTA ────────────────────────────────────────────────────────── */}
       <section className="pt-cta-section">
         <div className="pt-section-inner pt-cta-inner">
-          <p className="pt-cta-line">{s.common.interestedWorking}</p>
-          <button className="pt-btn-primary" onClick={() => onNavigate('contact')}>{s.common.contact}</button>
+          <div>
+            <p className="pt-cta-line">{s.common.interestedWorking}</p>
+            <p className="pt-cta-sub">Based in Ho Chi Minh City · Available for remote collaboration</p>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button className="pt-btn-primary" onClick={() => onNavigate('contact')}>{s.common.contact}</button>
+            <a
+              href="https://www.linkedin.com/in/motchinchintam/"
+              target="_blank" rel="noopener noreferrer"
+              className="pt-cta-linkedin"
+            >LinkedIn ↗</a>
+          </div>
         </div>
       </section>
 
-      {/* ── Footer ───────────────────────────────────────────────────────── */}
+      {/* ── 6. FOOTER ─────────────────────────────────────────────────────── */}
       <footer className="pt-footer">
         <div className="pt-footer-inner">
           <div className="pt-footer-left">

@@ -177,10 +177,9 @@ function AppInner() {
   ];
 
   const NAV_ITEMS = [
-    { id: 'work'     as const, label: s.nav.work     },
-    { id: 'about'    as const, label: s.nav.about    },
-    { id: 'insights' as const, label: s.nav.insights },
-    { id: 'contact'  as const, label: s.nav.contact  },
+    { id: 'work'    as const, label: s.nav.work    },
+    { id: 'about'   as const, label: s.nav.about   },
+    { id: 'contact' as const, label: s.nav.contact },
   ];
 
   return (
