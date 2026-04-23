@@ -3,11 +3,12 @@ import { useLang } from '../../i18n/index';
 interface ContactViewProps { onNavigate: (v: string) => void; }
 
 const CONTACTS = [
-  { label: 'Email',     value: 'motchinchiintam@gmail.com',       href: 'mailto:motchinchiintam@gmail.com',            icon: '✉' },
-  { label: 'LinkedIn',  value: 'linkedin.com/in/motchinchintam',  href: 'https://www.linkedin.com/in/motchinchintam/', icon: '💼' },
-  { label: 'Facebook',  value: 'fb.com/availableeeeee',           href: 'https://www.facebook.com/availableeeeee/',    icon: 'f' },
-  { label: 'Instagram', value: '@motchinchintam',                 href: 'https://www.instagram.com/motchinchintam',    icon: '◎' },
-  { label: 'Zalo',      value: '0916 366 443',                    href: 'https://zalo.me/0916366443',                  icon: 'Z' },
+  { label: 'Email (primary)',  value: 'motchinchiintam@gmail.com',      href: 'mailto:motchinchiintam@gmail.com',            icon: '✉' },
+  { label: 'Email (work)',     value: 'thanhquanvg98@yahoo.com',        href: 'mailto:thanhquanvg98@yahoo.com',              icon: '✉' },
+  { label: 'Phone / Zalo',    value: '0916 366 443',                    href: 'https://zalo.me/0916366443',                  icon: '📞' },
+  { label: 'LinkedIn',        value: 'linkedin.com/in/motchinchintam', href: 'https://www.linkedin.com/in/motchinchintam/', icon: '💼' },
+  { label: 'Facebook',        value: 'fb.com/availableeeeee',           href: 'https://www.facebook.com/availableeeeee/',    icon: 'f' },
+  { label: 'Instagram',       value: '@motchinchintam',                href: 'https://www.instagram.com/motchinchintam',    icon: '◎' },
 ];
 
 export default function ContactView({ onNavigate }: ContactViewProps) {
@@ -17,8 +18,18 @@ export default function ContactView({ onNavigate }: ContactViewProps) {
 
       <div className="pt-page-hero">
         <div className="pt-section-inner">
+          <span className="pt-eyebrow">Get in touch</span>
           <h1 className="pt-page-title">{s.contact.pageTitle}</h1>
           <p className="pt-page-sub">{s.contact.pageSub}</p>
+
+          {/* CV Download — hero level */}
+          <a
+            href="/quan-resume.pdf"
+            download="Nguyen_Thanh_Quan_Resume.pdf"
+            className="pt-cv-download"
+          >
+            ⬇ Download CV
+          </a>
         </div>
       </div>
 

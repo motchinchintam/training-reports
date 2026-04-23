@@ -114,6 +114,38 @@ export default function AboutView({ onNavigate }: AboutViewProps) {
         </div>
       </section>
 
+      {/* ── Key Achievements ────────────────────────────────────────────── */}
+      <section className="pt-section">
+        <div className="pt-section-inner">
+          <h2 className="pt-section-title">Key Achievements</h2>
+          <div className="pt-achievements-grid">
+            {[
+              { metric: '700 → 4,000+', label: 'Merchant accounts scaled in 12 months', co: 'Global Liaison' },
+              { metric: '20% → 5%',     label: 'Client churn rate reduced across 1,800 merchants', co: 'Zota Brand' },
+              { metric: '+35%',         label: 'Category revenue growth through structured upselling', co: 'Lotte Duty Free' },
+              { metric: '+40%',         label: 'Average transaction value increased via upselling', co: 'MaxSport' },
+              { metric: '100+',         label: 'Staff trained with 85%+ average pass rate', co: 'Multiple roles' },
+              { metric: '0%',           label: 'Attrition in Marketing cohort during onboarding redesign', co: 'Mango for Salon' },
+            ].map(a => (
+              <div key={a.metric} className="pt-achievement-card">
+                <div className="pt-achievement-metric">{a.metric}</div>
+                <div className="pt-achievement-label">{a.label}</div>
+                <div className="pt-achievement-co">{a.co}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: '2rem' }}>
+            <a
+              href="/quan-resume.pdf"
+              download="Nguyen_Thanh_Quan_Resume.pdf"
+              className="pt-cv-download"
+            >
+              ⬇ Download Full CV
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ── Beyond Work ─────────────────────────────────────────────────── */}
       <section className="pt-section">
         <div className="pt-section-inner">

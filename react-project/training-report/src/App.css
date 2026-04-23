@@ -2389,6 +2389,40 @@ body { margin: 0; background: var(--bg); }
   .home-hero-split { min-height: auto; }
 }
 
+/* ── CV Download button ────────────────────────────────────────────── */
+.pt-cv-download {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--pt-accent); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 11px 24px; font-size: 14px; font-weight: 700;
+  font-family: inherit; text-decoration: none; cursor: pointer;
+  transition: background .15s; margin-top: .5rem;
+}
+.pt-cv-download:hover { background: var(--pt-accent2); }
+
+/* ── Key Achievements grid ─────────────────────────────────────────── */
+.pt-achievements-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem;
+}
+.pt-achievement-card {
+  background: var(--pt-bg2); border-radius: 12px;
+  padding: 1.5rem; display: flex; flex-direction: column; gap: .4rem;
+  border-left: 3px solid var(--pt-accent);
+}
+.pt-achievement-metric { font-size: 1.6rem; font-weight: 900; color: var(--pt-accent); line-height: 1; }
+.pt-achievement-label  { font-size: 13px; color: var(--pt-text2); line-height: 1.5; }
+.pt-achievement-co     { font-size: 11px; font-weight: 700; color: var(--pt-text3); text-transform: uppercase; letter-spacing: .05em; margin-top: .2rem; }
+
+.pt-dark .pt-achievement-card { background: #1c1c1c; border-left-color: #2D6A4F; }
+.pt-dark .pt-achievement-metric { color: #6BB87A; }
+
+@media (max-width: 900px) {
+  .pt-achievements-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .pt-achievements-grid { grid-template-columns: 1fr; }
+}
+
 /* ── Trust / Metrics bar ───────────────────────────────────────────── */
 .pt-trust-bar {
   background: #111D0E;
